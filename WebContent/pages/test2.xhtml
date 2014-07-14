@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j">  
+	
+<h:head>
+<title>淘图无忧</title>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="content-language" content="zh" />
+	</f:facet>
+		<style>
+
+	</style>
+<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+<link rel="stylesheet" type="text/css" href="../css/generalStyle.css" />
+<link rel="stylesheet" type="text/css" href="../css/customStyle.css" />
+<link rel="stylesheet" type="text/css" href="../css/ajaxLoader.css" />
+<link rel="stylesheet" type="text/css" href="../css/specificStyle.css" />
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<script src="myJavaScript.js"></script>
+</h:head>
+<!-- <body onscroll="autoScroll()"> --><!-- use CSS positioning instead of javascript -->
+<body class="center" style="background:#f5f5f5;">
+
+<!-- http://stackoverflow.com/questions/6761263/how-to-call-bean-method-from-javascript-function-using-a4jajax-or-a4jactionlis -->
+	<h:form>
+	<div id="cats_panel">
+		<div class="userCatsTree treeNode">
+		    <p:tree value="#{test2Bean.treeNode}" scrollable="true" var="node" id="tree" style="padding-top:10px;">
+		        <p:treeNode id="treeNode">
+
+				
+					<table style="border-collapse:collapse; table-layout:fixed; width:130px;"><tr><td class="wrapword">
+		            <h:outputText style="font-size:15px;" rendered="#{node.is_parent}" value="#{fn:substring(node.name,0,20)}"/>
+					</td></tr></table>
+					<table border="0" style="border-collapse:collapse;table-layout:fixed; width:150px;"><tr>
+						<td style="width:130px;" class="wrapword">
+				            <a href="" style="font-size:15px;" title="#{node.name}" onclick="treeNodeLink('#{node.cid}');">
+				            	<h:outputText rendered="#{not node.is_parent}" value="#{fn:substring(node.name,0,20)}"/>
+				            </a>
+		            	</td>
+					</tr></table>
+		        </p:treeNode>
+		    </p:tree>
+		<div onclick="hideCatsPanel('cats_panel');" onmouseover="" style="cursor:pointer;position:absolute;top:0;left:190px;color:red;">&#10005;</div>
+		</div>
+	</div>
+						<a4j:jsFunction name="retrieveForSaleItems" action="#{test2Bean.doNothing}">
+					   	<a4j:param name="leafnodecid"/> 
+					</a4j:jsFunction>
+	yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+
+<a href="" onclick="treeNodeLink('xx');">xxxxxxxx</a>
+<a href="http://www.w3schools.com/">Visit W3Schools</a>
+	</h:form>
+
+
+
+</body>	
+
+</html>			

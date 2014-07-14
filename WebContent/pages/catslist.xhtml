@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j">  
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</f:facet>
+	<script>
+		function showNewSizeSku(e){
+			var pos = getMousePosition(e);
+			//alert(pos);
+			//var obj = document.getElementById('newSizeSku');
+			document.getElementById('newSizeSku').style.left=pos[0]+'px'; 
+			//alert(document.getElementById('newSizeSku').style.left);
+			//alert(obj.style.left);
+			
+			document.getElementById('newSizeSku').style.top=pos[1]+'px';
+			//alert(document.getElementById('newSizeSku').style.top);
+			//alert(obj.style.top);
+			document.getElementById('newSizeSku').style.display = "block";
+		}
+		
+		function showSameSizeSku(e){
+			var pos = getMousePosition(e);
+			//alert(pos);
+			//var obj = document.getElementById('newSizeSku');
+			document.getElementById('sameSizeSku').style.left=pos[0]+'px'; 
+			//alert(document.getElementById('newSizeSku').style.left);
+			//alert(obj.style.left);
+			
+			document.getElementById('sameSizeSku').style.top=pos[1]+'px';
+			//alert(document.getElementById('newSizeSku').style.top);
+			//alert(obj.style.top);
+			document.getElementById('sameSizeSku').style.display = "block";
+		}		
+		function getMousePosition(e) {
+			posx = 0;posy = 0; 
+			if (!e) var e = window.event; 
+			if (e.pageX || e.pageY){ 
+			posx = e.pageX;posy = e.pageY; 
+			} 
+			else if (e.clientX || e.clientY){ 
+			posx = e.clientX;posy = e.clientY; 
+			} 
+		    var pos=Array(posx,posy);
+		    //alert(pos);
+			return pos;
+		}
+		
+		function hideNewSizeSku() {
+			document.getElementById('newSizeSku').style.display = "none";
+		}
+
+		function hideSameSizeSku() {
+			document.getElementById('sameSizeSku').style.display = "none";
+		}
+		function hideFileupload(){
+			document.getElementById('fileupload').style.display = "none";
+		} 
+		
+		function setValues(index){
+			//alert(index);
+			//document.getElementById('hiddenform:databaseItemID_hidden').value = document.getElementById('data:onenumiid:'+index+':databaseItemID').value;
+			document.getElementById('hiddenform:add_new_price_hidden').value = document.getElementById('data:onenumiidgrid:'+index+':add_new_price').value;//the id may change if adding more primefaces elements
+			document.getElementById('hiddenform:add_new_color_hidden').value = document.getElementById('data:onenumiidgrid:'+index+':add_new_color_input').value;
+			document.getElementById('hiddenform:custom_new_color_hidden').value = document.getElementById('data:onenumiidgrid:'+index+':custom_new_color').value;
+			document.getElementById('hiddenform:add_new_size_hidden').value = document.getElementById('data:onenumiidgrid:'+index+':add_new_size_input').value;
+			document.getElementById('hiddenform:custom_new_size_hidden').value = document.getElementById('data:onenumiidgrid:'+index+':custom_new_size').value;
+			document.getElementById('hiddenform:add_new_quantity_hidden').value = document.getElementById('data:onenumiidgrid:'+index+':add_new_quantity').value;
+			document.getElementById('hiddenform:custom_item_description').value = document.getElementById('data:onenumiidgrid:'+index+':custom_item_description').value;				
+			//document.getElementById('hiddenform').submit();
+			document.getElementById('hiddenform:hidden_button').click();
+			//alert("xxxxxxxx");
+		}
+
+		//get absolute position of an element
+		function XY(o) {
+			var z=o, x=0,y=0, c; 
+			while(z &amp;&amp; !isNaN(z.offsetLeft) &amp;&amp; !isNaN(z.offsetTop)) {        
+				c = isNaN(window.globalStorage)?0:window.getComputedStyle(z,null); 
+				x += z.offsetLeft-z.scrollLeft+(c?parseInt(c.getPropertyValue('border-left-width'),10):0);
+				y += z.offsetTop-z.scrollTop+(c?parseInt(c.getPropertyValue('border-top-width'),10):0);
+				z = z.offsetParent;
+			} 
+			return {x:o.X=x,y:o.Y=y};
+		}
+
+		function positionComponent(e) {
+			var pos = getMousePosition(e);
+			//alert(pos);
+			document.getElementById("indicator").style.left = pos[0]+"px";
+			document.getElementById("indicator").style.top = pos[1]+"px";			
+		}
+
+		function positionComponent2(e) {
+			var pos = getMousePosition(e);
+			//alert("xxx"+pos);
+			document.getElementById("indicator2").style.left = pos[0]+"px";
+			document.getElementById("indicator2").style.top = pos[1]+"px";
+			document.getElementById("indicator2").style.display = "block";
+		}
+		
+		function hideAjaxIndicator() {
+			document.getElementById("indicator2").style.display = "none";
+		}
+		
+	    function scrollPage(data) {
+	    	if (data.status == 'success') {
+	    		if (navigator.userAgent.indexOf('Chrome') != -1){
+	    			window.location.href='#anchorPanel';
+	    		}
+	    		else {
+	        		window.location.hash='anchorPanel';
+	    		}
+	    	}
+	    }
+	    
+		function showPriceInput(e){
+			var pos = getMousePosition(e);
+			document.getElementById('changePriceInput').style.left=pos[0]+'px'; 			
+			document.getElementById('changePriceInput').style.top=pos[1]+'px';
+			document.getElementById('changePriceInput').style.display = "block";
+		}	  
+		
+		function hidePriceInput() {
+			document.getElementById('changePriceInput').style.display = "none";
+		}
+
+	</script>
+	<style>	
+.ui-datatable tbody,
+.ui-datatable-footer,
+.ui-datatable .ui-datatable-data tr, 
+.ui-datatable .ui-datatable-data td, 
+.ui-datatable .ui-datatable-data-empty td {
+    border-style: none;
+    padding:0px 0px 0px 0px !important;
+}
+
+.ui-datatable thead th {
+	border-style: none;
+	text-align: left;
+	padding:0px 0px;
+}
+
+.panelGrid tr, .panelGrid td { 
+	border: none;
+	padding: 0;
+	spacing: 0;
+}
+
+.ui-datagrid-column {
+	vertical-align:top; 
+	padding: 0px;
+	width: 33%;
+} 
+ui-datagrid-data { width: 1000px; }
+.ui-datagrid-content {
+	border: none;
+}  
+.ui-panelgrid .ui-panelgrid-header {
+    text-align: left;
+ 	height: 20px;
+    padding:2px 5px;
+} 
+.image {
+	border:none;
+	height:20px;
+	width:20px;
+}
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.ui-panel-content {
+	padding:0px 0px 0px 0px !important;
+	border:0px !important;
+}
+
+ .files td.name {
+	display: none;//word-break:break-all
+ }
+  .files td.size {
+	display: none;
+ }
+ .ui-fileupload .start {
+    display: none;
+}
+ .ui-fileupload .cancel {
+    display: none;
+}
+
+.ui-fileupload .progress {
+    display: none;
+}
+ 
+table {
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+table td, table th {
+    padding: 0px;
+    spacing: 0px;
+}
+
+.ui-custompanelgrid, .ui-custompanelgrid tr, .ui-custompanelgrid td {
+	border: none !important;
+	padding: 1 !important;
+	spacing: 1 !important;
+	font-weight: bold;
+	background-color: #D3D3D3 !important;
+	box-shadow: 5px 5px 2px #9EA3A3;
+}
+.skin { 
+	padding-top:0px; 
+	padding-bottom:0px;
+	cursor:default; 
+	font:menutext; 
+	position:absolute; 
+	text-align:left; 
+	font-size: 12pt; 
+	width:150px;
+	color:#ffffff;
+	border:2 solid buttonface; 
+	border:2 outset buttonhighlight; 
+}
+.background {
+	background: url("../images/moose.JPG") repeat;
+}
+.tableShaddow {
+	box-shadow: 5px 5px 2px #9EA3A3;
+}
+	</style>
+<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+<link rel="stylesheet" type="text/css" href="../css/generalStyle.css" />
+</h:head>
+
+<h:body> 
+	<div class="wrapper">
+	<ui:include src="navigationbar.xhtml" />
+	<h:form id="data">
+		<p:growl id="messages" showDetail="true"/> 
+		<p:panelGrid id="catslist" styleClass="panelGrid" style="width:100%;">
+			<f:facet name="header">
+				<p:row style="height:300px;">
+					<p:column style="width:300px;vertical-align:top;">
+						<p:selectOneMenu value="#{retrieveDataBean.cid}" style="width:300px;height:30px;font-size:15px;">						
+							<p:ajax update=":data:catslist"/>
+							<f:selectItems value="#{retrieveDataBean.sellerCatsList.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column id="subSellerCid" style="width:300px;vertical-align:top;">
+						<p:selectOneMenu value="#{retrieveDataBean.subSellerCid}" style="width:300px;height:30px;font-size:15px;">						
+							<f:selectItems value="#{retrieveDataBean.subSellerCatsList.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+						</p:selectOneMenu>  
+					</p:column>	
+					<p:column style="vertical-align:top;">
+						<p:commandButton value="Submit" ajax="true" action="#{retrieveDataBean.retrieveForSaleItems}" onclick="positionComponent(event)" update=":data:items :data:onenumiid :data:messages" style="height:30px;font-size:15px;" />
+					</p:column>
+				</p:row>
+			</f:facet>
+		</p:panelGrid>
+
+		<div id="indicator" style="text-align:center;position:absolute;">
+			<p:ajaxStatus>
+				<f:facet name="start"><img src="../images/ajax-loader.gif" alt="loading......" /></f:facet>
+				<f:facet name="complete"><h:outputText value="" /></f:facet>
+			</p:ajaxStatus>	
+		</div>
+
+		
+		<p:outputPanel id="items">
+		<p:dataTable var="numiid" editable="true" editMode="cell" value="#{retrieveDataBean.numiids}" rendered="#{not empty retrieveDataBean.numiids}" style="width:100%;" >
+		<ui:param name="numiid_size" value="#{fn:length(retrieveDataBean.numiids)}" />
+		<p:ajax event="cellEdit" listener="#{retrieveDataBean.onNumiidCellEdit}" update=":data:messages" />       	        	
+		<f:attribute name="numiid" value="#{numiid}" />
+		<h:outputText value="#{numiid_size}"/>
+					<p:column style="width:120px;" headerText="Pic">
+						<img src="#{retrieveDataBean.numiidToItemPicUrl[numiid]}" style="height:100px;width:100px;"/>
+					</p:column>							
+					<p:column headerText="Title">
+						<h:commandLink action="#{retrieveDataBean.selectItem}" onclick="positionComponent(event);" >
+							<h:outputText value="#{retrieveDataBean.numiidToTitle[numiid]}" />
+							<f:setPropertyActionListener target="#{retrieveDataBean.numiid}" value="#{numiid}" />
+							<f:ajax onevent="scrollPage" render=":data:onenumiid :newSizeSku :data:messages"/>
+							<!-- h:commandLink oncomplete and onsuccess have bugs and not working, so used onevent="scrollPage" instead. pay attention, not onevent="scrollPage()", do not need parentheses in the js function  -->
+						</h:commandLink>
+					</p:column>
+					<p:column headerText="Price">
+						<p:cellEditor>
+						<f:facet name="output"><h:outputText value="#{retrieveDataBean.numiidToItemPrice[numiid]}" /></f:facet>  
+						<f:facet name="input"><p:inputText value="#{retrieveDataBean.itemsPrice}"/></f:facet>  
+						</p:cellEditor>
+						<!--  <h:outputText value="#{retrieveDataBean.numiidToItemPrice[numiid]}" /> -->
+					</p:column>
+					<p:column headerText="Quantity">
+						<h:outputText value="#{retrieveDataBean.numiidToItemNum[numiid]}" />
+					</p:column>
+					<!--
+					<p:column headerText="Numiid">
+						<h:outputText value="#{numiid}" />
+					</p:column>
+					-->
+		</p:dataTable>
+		</p:outputPanel>
+
+		<a id="anchorPanel"/>
+		<p:outputPanel id="onenumiid">
+		<p:dataGrid id="onenumiidgrid" columns="3" var="color" value="#{retrieveDataBean.colors}" rendered="#{not empty retrieveDataBean.colors}" style="width:100%;">
+			<p:panel header="#{retrieveDataBean.propertyToAlias[color] } #{retrieveDataBean.colorToColorName[color]} &#65509;: #{retrieveDataBean.colorToPrice[color]}" style="text-align:center;" rendered="#{color != 'new'}" >
+				<h:panelGrid columns="1" style="width:100%;font-size:15px;" styleClass="panelGrid">
+					<!-- <h:outputText value="#{color}" /><br/> -->
+					<img src="#{retrieveDataBean.propToImg[color]}" style="width:100%;"/>
+										<p:fileUpload fileUploadListener="#{retrieveDataBean.missingFileUploadlistener}" 
+											rendered="#{retrieveDataBean.propToImg[color] == null}"
+											auto="true"
+											multiple="false" 
+											mode="advanced"
+											sizeLimit="5000000"
+											update=":data:onenumiid :data:messages"
+											allowTypes="/(\.|\/)(gif|jpe?g|png)$/">
+											<f:attribute name="color" value="#{color}" />
+										</p:fileUpload>
+					<p:dataGrid id="size" columns="3" var="size" value="#{retrieveDataBean.colorToSize[color]}" style="text-align:left;" styleClass="hide-column-names" >         			
+						<h:panelGrid columns="1" style="width:100%;text-align:left;" rendered="#{size != 'new'}">
+							<p:row>
+								<!-- <h:outputText value="#{color};#{size}"/> -->
+								<ui:param name="color_size" value="#{color};#{size}" />
+								<p:column>
+									<h:outputText value="#{retrieveDataBean.sizeToSizeName[size]}" rendered="#{retrieveDataBean.propertyToAlias[size] == null}"/>
+									<h:outputText value="#{retrieveDataBean.propertyToAlias[size]}" rendered="#{retrieveDataBean.propertyToAlias[size] != null}"/>
+								</p:column>
+								<p:column>
+									(<font color="red"><b><h:outputText value="#{retrieveDataBean.colorSizeToQuantity[color_size]}" /></b></font>)
+								</p:column>
+								<p:column>
+									<h:commandLink action="#{retrieveDataBean.updateSkuQuantity}" onclick="positionComponent(event);">
+										<!-- <h:outputText value="increase" /> -->
+										<img src="../images/plus.png" class="image"/>
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuProperties}" value="#{color};#{size}" />
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuChange}" value="plus" />
+										<f:ajax render=":data:messages"/>
+									</h:commandLink>
+									<h:commandLink action="#{retrieveDataBean.updateSkuQuantity}" onclick="positionComponent(event);">
+										<!-- <h:outputText value="increase" /> -->
+										<img src="../images/minus.png" class="image"/>
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuProperties}" value="#{color};#{size}" />
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuChange}" value="minus" />
+										<f:ajax render=":data:messages"/>
+									</h:commandLink>
+
+									<h:commandLink action="#{retrieveDataBean.doNothing}" onclick="showSameSizeSku(event);">
+										<!-- <h:outputText value="increase" /> -->
+										<img src="../images/txt2.png" class="image"/>
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuProperties}" value="#{color};#{size}" />
+										<f:ajax render=":data:messages"/>
+									</h:commandLink>
+									<!--  
+									<h:commandLink action="#{retrieveDataBean.doNothing}" onclick="showSameSizeSku(event);">
+										Remove
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuProperties}" value="#{color};#{size}" />
+										<f:setPropertyActionListener target="#{retrieveDataBean.skuChange}" value="minus" />
+										<f:ajax render=":data:messages"/>
+									</h:commandLink>
+									-->
+								</p:column>
+							</p:row>
+						</h:panelGrid >
+						<h:panelGrid columns="2" style="width:100%;" rendered="#{size == 'new'}">
+							<!-- <h:outputText value="#{color};#{size}"/> -->
+							<p:row>
+								<p:column>
+									<h:commandLink value="Add" action="#{retrieveDataBean.doNothing}" onclick="showNewSizeSku(event);" style="margin:0" >
+										<f:setPropertyActionListener target="#{retrieveDataBean.color}" value="#{color}" />
+										<f:setPropertyActionListener target="#{retrieveDataBean.price}" value="#{retrieveDataBean.colorToPrice[color]}" />
+										<f:ajax render=":newSizeSku:panelgrid"/>
+									</h:commandLink>
+								</p:column>
+								<p:column>
+									<h:commandLink value="	Change price" action="#{retrieveDataBean.doNothing}" onclick="showPriceInput(event);" style="margin:0" >
+										<f:setPropertyActionListener target="#{retrieveDataBean.color}" value="#{color}" />
+										<f:ajax/>
+									</h:commandLink>
+								</p:column>
+							</p:row>
+						</h:panelGrid>
+					</p:dataGrid>
+				</h:panelGrid>
+			</p:panel>
+				
+			<p:panel header="Add New" style="text-align:left;" rendered="#{color == 'new'}">
+				<p:panelGrid style="width:100%;font-size:15px;" styleClass="panelGrid">
+					<p:row>
+						<p:column><h:outputText value="Image: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td colspan="2">
+										<div id="fileupload">
+										<p:fileUpload fileUploadListener="#{retrieveDataBean.fileUploadlistener}" 
+											auto="true"
+											multiple="false" 
+											mode="advanced"
+											sizeLimit="5000000"
+											update=":data:messages"
+											oncomplete=""
+											allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column><h:outputText value="ID: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td colspan="2">
+										<p:inputText id="databaseItemID" value="#{retrieveDataBean.databaseItemID}" style="width:98%;">
+											<p:ajax event="blur" update=":data:messages custom_item_description"/>
+										</p:inputText>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>	
+					
+					<p:row>
+						<p:column><h:outputText value="Price: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td colspan="2">
+										<p:inputText id="add_new_price" value="#{retrieveDataBean.price}" style="width:98%;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					
+					<p:row>
+						<p:column><h:outputText value="Quantity: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td colspan="2">
+										<p:inputText id="add_new_quantity" value="#{retrieveDataBean.quantity}" style="width:98%;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					
+					<p:row>
+						<p:column><h:outputText value="Color: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td style="width:40%;">
+										<p:selectOneMenu id="add_new_color" value="#{retrieveDataBean.color}"  style="vertical-align:bottom;width:100%;">
+											<f:selectItems value="#{retrieveDataBean.colorPidVidToName.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+										</p:selectOneMenu> 
+									</td>
+									<td style="width:60%;">
+										<p:inputText id="custom_new_color" value="#{retrieveDataBean.colorAlias}" style="width:97%;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column><h:outputText value="Size: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td style="width:40%;">			
+										<p:selectOneMenu id="add_new_size" value="#{retrieveDataBean.size}" style="vertical-align:bottom;width:100%;">
+											<f:selectItems value="#{retrieveDataBean.sizePidVidToName.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+										</p:selectOneMenu>
+									</td>
+									<td style="width:60%;">
+										<p:inputText id="custom_new_size" value="#{retrieveDataBean.sizeAlias}" style="width:97%;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column><h:outputText value="Database IDs: " /></p:column>
+						<p:column>
+							<table style="width:100%;">
+								<tr>
+									<td style="width:100%;">							
+										<p:inputTextarea id="custom_item_description" value="#{retrieveDataBean.databaseItemID}" style="width:98%;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					<p:row>
+					<p:column></p:column>
+					<p:column>
+							<h:commandLink action="#{retrieveDataBean.doNothing}" onclick="setValues('#{fn:length(retrieveDataBean.colors)-1}');positionComponent2(event)" style="margin:0" >
+								<img src="../images/add.PNG" style="width:60px;border:0px" alt="Add" />
+								<f:ajax/>
+							</h:commandLink>					
+					</p:column>
+					</p:row>
+				</p:panelGrid>
+			</p:panel>
+		</p:dataGrid>
+		</p:outputPanel>
+
+	</h:form>
+
+	<!-- hidden forms -->
+	<h:form id="sameSizeSku" style="display:none;position:absolute">
+		<p:panelGrid id="panelgrid" styleClass="ui-custompanelgrid" style="width:300px;font-size:15px;" >
+			<p:row>
+				<p:column><h:outputText value="Quantity: " /></p:column>
+				<p:column><p:inputText value="#{retrieveDataBean.quantity}" style="width:99%;"/></p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Change: " /></p:column>
+				<p:column>
+					<p:selectOneMenu value="#{retrieveDataBean.skuChange}" style="width:99%;">
+						<f:selectItem itemValue="plus" itemLabel="increase" />
+						<f:selectItem itemValue="minus" itemLabel="decrease" />
+					</p:selectOneMenu>   
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Store: " /></p:column>
+				<p:column>
+					<p:selectOneMenu value="#{retrieveDataBean.store}" style="width:99%;">
+						<f:selectItem itemValue="OS" itemLabel="Official Store" />
+						<f:selectItem itemValue="TJXMS" itemLabel="T.J.MAXX or Marshalls" />
+					</p:selectOneMenu>   
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Database IDs: " /></p:column>
+				<p:column><p:inputTextarea value="#{retrieveDataBean.databaseItemIDs}" style="width:99%;"/></p:column>
+			</p:row>					
+			<p:row>
+				<p:column><h:outputText value="" /></p:column>
+				<p:column>
+					<p:commandButton value="Submit" action="#{retrieveDataBean.updateSkuQuantity}" onclick="positionComponent(event)" style="margin:0;" update=":data:messages"/>
+					<p:commandButton type="button" value="Close" onclick="hideSameSizeSku()"/>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+	</h:form>
+		
+	<!-- hidden forms -->
+	<h:form id="newSizeSku" style="display:none;position:absolute">
+		<p:panelGrid id="panelgrid" styleClass="ui-custompanelgrid" style="width:300px;font-size:15px;" >
+			<p:row>
+				<p:column><h:outputText value="Size: " /></p:column>
+				<p:column style="width:40%;">
+					<p:selectOneMenu value="#{retrieveDataBean.size}" style="width:100%;">
+						<!-- <f:selectItems value="#{retrieveDataBean.sizePidVidToName.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" /> -->
+						<f:selectItems value="#{retrieveDataBean.availableSizeForEachColor.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column style="vertical-align:top;">
+					<p:inputText id="custom_new_size" value="#{retrieveDataBean.sizeAlias}" style="width:99%;"/>
+				</p:column>
+			</p:row>
+
+			<p:row>
+				<p:column><h:outputText value="Quantity: " /></p:column>
+				<p:column colspan="2"><p:inputText value="#{retrieveDataBean.quantity}" style="width:99%;"/></p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Store: " /></p:column>
+				<p:column colspan="2">
+					<p:selectOneMenu value="#{retrieveDataBean.store}" style="width:99%;">
+						<f:selectItem itemValue="OS" itemLabel="Official Store" />
+						<f:selectItem itemValue="TJXMS" itemLabel="T.J.MAXX or Marshalls" />
+					</p:selectOneMenu>   
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Database IDs: " /></p:column>
+				<p:column colspan="2"><p:inputTextarea value="#{retrieveDataBean.databaseItemIDs}" style="width:99%;"/></p:column>
+			</p:row>					
+			<p:row>
+				<p:column><h:outputText value="" /></p:column>
+				<p:column colspan="2">
+					<p:commandButton value="Submit" action="#{retrieveDataBean.addNewSizeSku}" onclick="positionComponent(event)" style="margin:0;" update=":data:messages"/>
+					<p:commandButton type="button" value="Close" onclick="hideNewSizeSku()"/>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+	</h:form>
+
+	<h:form id="hiddenform" style="display:none;position:absolute;">
+		<!-- <p:inputText id="databaseItemID_hidden" value="#{retrieveDataBean.databaseItemID}"/> -->
+		<p:inputText id="add_new_price_hidden" value="#{retrieveDataBean.price}"/>
+		<p:inputText id="add_new_color_hidden" value="#{retrieveDataBean.color}"/>
+		<p:inputText id="custom_new_color_hidden" value="#{retrieveDataBean.colorAlias}"/>
+		<p:inputText id="add_new_size_hidden" value="#{retrieveDataBean.size}"/>
+		<p:inputText id="custom_new_size_hidden" value="#{retrieveDataBean.sizeAlias}"/>
+		<p:inputText id="add_new_quantity_hidden" value="#{retrieveDataBean.quantity}"/>
+		<p:inputTextarea id="custom_item_description" value="#{retrieveDataBean.databaseItemIDs}"/>
+		<p:commandButton id="hidden_button" ajax="true" global="false" value="Add" action="#{retrieveDataBean.addNewSku}" update=":data:onenumiid :data:messages" onsuccess="hideAjaxIndicator()"/>
+	</h:form>
+	
+	<h:form id="changePriceInput" style="display:none;position:absolute">
+		<p:panelGrid styleClass="ui-custompanelgrid" style="width:200px;font-size:15px;" >
+			<p:row>
+				<p:column><h:outputText value="Price: " /></p:column>
+				<p:column>
+					<p:inputText id="new_price" value="#{retrieveDataBean.itemPrice}"/>
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="" /></p:column>
+				<p:column>
+					<p:commandButton value="Submit" ajax="true" action="#{retrieveDataBean.changeItemPrice}" update=":data:messages" onclick="positionComponent2(event)" onsuccess="hideAjaxIndicator()"/>
+					<p:commandButton type="button" value="Close" onclick="hidePriceInput()"/>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+	</h:form>
+	
+	<div id="indicator2" style="position:absolute;display:none;"><img src="../images/ajax-loader.gif" alt="loading......" /></div>  
+    <div class="push"></div>
+    </div>
+ 	<ui:include src="footer.xhtml" />			
+</h:body>
+</html>

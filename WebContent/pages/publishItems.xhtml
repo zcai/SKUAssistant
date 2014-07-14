@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j">  
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</f:facet>
+<style>
+a:link {color:#000000;text-decoration:none;font-size:14px;}    /* unvisited link */
+a:visited {color:#000000;text-decoration:none;} /* visited link */
+a:hover {color:red;text-decoration:underline;}   /* mouse over link */
+a:active {color:red;text-decoration:underline;}  /* selected link */
+</style>	
+</h:head>
+<h:body> 
+	<h:form id="tree_node">
+	
+	    <p:tree value="#{publishItemsBean.root}" var="node" id="tree">
+	        <p:treeNode id="treeNode">
+	            <p:outputPanel rendered="#{node.is_parent}"><h:outputText value="#{node.name}" style="font-size:14px;color:#000000;"/></p:outputPanel>
+	            <h:commandLink rendered="#{not node.is_parent}" action="#{publishItemsBean.createForm}">
+	            	<h:outputText value="#{node.name}" /><h:outputText value="#{node.cid}" />
+					<f:setPropertyActionListener target="#{publishItemsBean.cid}" value="#{node.cid}" />
+	            	<f:ajax render=":tree_node:testid"/>
+	            </h:commandLink>	        
+			</p:treeNode>
+	    </p:tree>	
+	    xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	    <p:outputPanel id="testid">
+	    	<h:outputText value="#{publishItemsBean.formData.vidToName}" rendered="#{not empty publishItemsBean.formData.vidToName}"/>
+	    	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+			<ui:param name="pids" value="#{publishItemsBean.formData.pidToName.keySet().toArray()}" />
+			<p:dataTable id="table" var="onepiv" value="#{pids}" style="width:1000px;" >
+				<p:column headerText="piv">
+					<h:outputText value="#{onepid}" />
+				</p:column>
+			</p:dataTable>
+					<table id="table">
+						<ui:repeat var="onepid" value="#{publishItemsBean.formData.pidToName.keySet().toArray()}">
+												
+							<tr>
+								<td>
+									<h:outputText value="#{onepid}" />
+								</td>
+								<td>
+									<h:outputText value="#{publishItemsBean.formData.pidToName[onepid]}" />
+								</td>
+								<td>
+									<h:outputText value="#{publishItemsBean.formData.pidToVids[onepid]}" />
+									<p:inputText id="pid" value="#{publishItemsBean.pids}" rendered="#{fn:length(publishItemsBean.formData.pidToVids[onepid]) == 0}" style="width:99%;"/>
+
+									<p:selectOneMenu id="vid" value="#{publishItemsBean.vids}" rendered="#{not empty publishItemsBean.formData.pidToVids[onepid]}" style="vertical-align:bottom;width:100%;">
+										<f:selectItems value="#{publishItemsBean.formData.pidToVids[onepid]}" var="onevid" itemValue="#{onevid}" itemLabel="#{publishItemsBean.formData.vidToName[onevid]}" />
+									</p:selectOneMenu> 
+								</td>
+							</tr>
+						</ui:repeat>
+					</table>			
+	    	<h:outputText value="#{publishItemsBean.formData.pidToName.keySet().toArray()}" rendered="#{not empty publishItemsBean.formData.pidToName}"/>
+	    	xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	    	<h:outputText value="#{publishItemsBean.formData.pidToVids}" rendered="#{not empty publishItemsBean.formData.pidToVids}"/>
+	    </p:outputPanel>
+	</h:form>
+	
+	<h:form id="data_form">
+		
+	
+	</h:form>
+</h:body>
+</html>			

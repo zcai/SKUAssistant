@@ -1,0 +1,42 @@
+.ui-datatable tbody,
+.ui-datatable-footer,
+.ui-datatable .ui-datatable-data tr, 
+.ui-datatable .ui-datatable-data td, 
+.ui-datatable .ui-datatable-data-empty td {
+    border-style: none;
+    padding:5px 5px;
+}
+
+.ui-datatable thead th {
+	border-style: none;
+	text-align: left;
+	padding:5px 5px;
+}
+
+.image {
+	border:none;
+	height:15px;
+	width:15px;
+}
+.image2 {
+	border:none;
+	height:20px;
+	width:20px;
+}
+
+.panelGrid tr, .panelGrid td { 
+	border: none;
+	padding: 0;
+	spacing: 0;
+}
+
+.ui-panelgrid tr, .ui-panelgrid td {
+	text-align: left;
+}
+
+.httplink {
+	text-decoration: none;
+	color: #257FF5;
+	font-size: 12px;
+	cursor: pointer;
+}

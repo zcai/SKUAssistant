@@ -1,0 +1,109 @@
+#warningGradientOuterBarG{
+height:20px;
+width:160px;
+border:1px solid #4EA34A;
+overflow:hidden;
+background-color:#CCDFE8;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCDFE8), to(#4EA34A));
+background: -moz-linear-gradient(top, #CCDFE8, #4EA34A);
+background: -webkit-linear-gradient(top, #CCDFE8, #4EA34A);
+background: -ms-linear-gradient(top, #CCDFE8, #4EA34A);
+background: -o-linear-gradient(top, #CCDFE8, #4EA34A);
+background: linear-gradient(top, #CCDFE8, #4EA34A);
+}
+
+.warningGradientBarLineG{
+background-color:#CCDFE8;
+float:left;
+width:14px;
+height:120px;
+margin-right:24px;
+margin-top:-28px;
+-moz-transform:rotate(45deg);
+-webkit-transform:rotate(45deg);
+-ms-transform:rotate(45deg);
+-o-transform:rotate(45deg);
+transform:rotate(45deg);
+}
+
+.warningGradientAnimationG{
+width:236px;
+-moz-animation-name:warningGradientAnimationG;
+-moz-animation-duration:1.2s;
+-moz-animation-iteration-count:infinite;
+-moz-animation-timing-function:linear;
+-webkit-animation-name:warningGradientAnimationG;
+-webkit-animation-duration:1.2s;
+-webkit-animation-iteration-count:infinite;
+-webkit-animation-timing-function:linear;
+-ms-animation-name:warningGradientAnimationG;
+-ms-animation-duration:1.2s;
+-ms-animation-iteration-count:infinite;
+-ms-animation-timing-function:linear;
+-o-animation-name:warningGradientAnimationG;
+-o-animation-duration:1.2s;
+-o-animation-iteration-count:infinite;
+-o-animation-timing-function:linear;
+animation-name:warningGradientAnimationG;
+animation-duration:1.2s;
+animation-iteration-count:infinite;
+animation-timing-function:linear;
+}
+
+#warningGradientFrontBarG{
+}
+
+@-moz-keyframes warningGradientAnimationG{
+0%{
+margin-left:0px;
+}
+
+100%{
+margin-left:-38px;
+}
+
+}
+
+@-webkit-keyframes warningGradientAnimationG{
+0%{
+margin-left:0px;
+}
+
+100%{
+margin-left:-38px;
+}
+
+}
+
+@-ms-keyframes warningGradientAnimationG{
+0%{
+margin-left:0px;
+}
+
+100%{
+margin-left:-38px;
+}
+
+}
+
+@-o-keyframes warningGradientAnimationG{
+0%{
+margin-left:0px;
+}
+
+100%{
+margin-left:-38px;
+}
+
+}
+
+@keyframes warningGradientAnimationG{
+0%{
+margin-left:0px;
+}
+
+100%{
+margin-left:-38px;
+}
+
+} - See more at: http://cssload.net/#sthash.ArZHSxsL.dpuf

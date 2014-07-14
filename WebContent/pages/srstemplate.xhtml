@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j">  
+<h:head><title><ui:insert name="title" /></title>
+<f:facet name="first">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</f:facet> 
+<style>
+.image {
+	border:none;
+	height:50px;
+	width:50px;
+}
+.ui-panel-content {
+   padding:0px 0px 0px 0px !important;
+}
+.ui-panel-titlebar {
+	height: 15px;
+	font-size: 15px;
+}
+table {
+	padding: 0;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+table tr td, table tr th {
+	border: 0px solid black;
+}
+.panelGrid tr, .panelGrid td { 
+	border: none;
+}
+.httplink {
+	text-decoration: none;
+	color: #257FF5;
+	font-size: 12px;
+	cursor: pointer;
+}
+</style>
+</h:head>
+<h:body>
+	<h:form id="navigation_bar">  
+		<p:panelGrid styleClass="panelGrid" style="width:1000px;">
+			<p:row>
+				<p:column><a href="index.jsf"><img src="../images/home.gif" alt="home page" class="image"/></a></p:column>
+				<p:column><a href="requestFormPCR.jsf"><img src="../images/new_request.png" alt="home page" class="image"/></a></p:column>
+				<p:column><a href="requestFormMLPA.jsf"><img src="../images/new_request2.png" alt="home page" class="image"/></a></p:column>
+				<p:column><a href="request.jsf"><img src="../images/request.gif" alt="home page" class="image"/></a></p:column>
+				<p:column><a href="accounting.jsf"><img src="../images/calculator2.png" alt="summary" class="image"/></a></p:column>
+				<p:column><a href="userInfoForm.jsf"><img src="../images/new_user.png" alt="Create an account" class="image" /></a></p:column>
+				<p:column><a href="userInfo.jsf"><img src="../images/user-mapping.png" alt="update user info" class="image"/></a></p:column>
+				<p:column><a href="userInfo.jsf"><img src="../images/users.gif" alt="Manage users" class="image"/></a></p:column>
+				<p:column rendered="#{not loginBean.sessionValid}"><img style="cursor:pointer;" src="../images/login.png" alt="Login" class="image" onclick="window.showModalDialog('login.jsf',null, 'dialogWidth: 300px; dialogHeight: 300px; center: yes;');" /></p:column>
+				<p:column rendered="#{loginBean.sessionValid}"><h:commandLink action="#{logoutBean.logout}"><img src="../images/logout.png" alt="Logout" class="image"/></h:commandLink></p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputLink value="index.jsf" style="text-decoration: none;"><h:outputText value="Home" styleClass="httplink"/></h:outputLink></p:column>
+				<p:column><h:outputLink style="text-decoration: none;" value="requestFormPCR.jsf" ><h:outputText value="New request(PCR)" styleClass="httplink"/></h:outputLink></p:column>
+				<p:column><h:outputLink style="text-decoration: none;" value="requestFormMLPA.jsf" ><h:outputText value="New request(MLPA)" styleClass="httplink"/></h:outputLink></p:column>
+				<p:column><h:outputLink style="text-decoration: none;" value="request.jsf" ><h:outputText value="All requests" styleClass="httplink"/></h:outputLink></p:column>
+				<p:column><h:outputLink style="text-decoration: none;" value="accounting.jsf" ><h:outputText value="Accounting" styleClass="httplink"/></h:outputLink></p:column>
+				<p:column><h:outputLink style="text-decoration: none;" value="userInfoForm.jsf" ><h:outputText value="Sign up" styleClass="httplink"/></h:outputLink></p:column>
+				<p:column><h:outputLink style="text-decoration: none;" value="userInfo.jsf" ><h:outputText value="Update" styleClass="httplink"/></h:outputLink></p:column>		
+				<p:column><h:outputLink style="text-decoration: none;" value="userInfo.jsf" ><h:outputText value="Users" styleClass="httplink"/></h:outputLink></p:column>		
+				<p:column rendered="#{not loginBean.sessionValid}"><h:outputText value="Login" styleClass="httplink"/></p:column>
+				<p:column rendered="#{loginBean.sessionValid}"><h:commandLink style="text-decoration: none;" action="#{logoutBean.logout}" ><h:outputText value="Logout" styleClass="httplink"/></h:commandLink></p:column>
+			</p:row>
+		</p:panelGrid>
+	</h:form>
+	<ui:insert name="content" />
+</h:body>
+</html>

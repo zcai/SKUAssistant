@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j">  
+<h:head>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	</f:facet>
+	<script>
+
+	</script>
+	<style>	
+.ui-datatable tbody,
+.ui-datatable-footer,
+.ui-datatable .ui-datatable-data tr, 
+.ui-datatable .ui-datatable-data td, 
+.ui-datatable .ui-datatable-data-empty td {
+    border-style: none;
+    padding:0px 0px 0px 0px !important;
+}
+
+.ui-datatable thead th {
+	border-style: none;
+	text-align: left;
+	padding:0px 0px;
+}
+
+.panelGrid tr, .panelGrid td { 
+	border: none;
+	padding: 0;
+	spacing: 0;
+}
+
+.ui-datagrid-column {
+	vertical-align:top; 
+	padding: 0px;
+	width: 33%;
+} 
+ui-datagrid-data { width: 1000px; }
+.ui-datagrid-content {
+	border: none;
+}  
+.ui-panelgrid .ui-panelgrid-header {
+    text-align: left;
+ 	height: 20px;
+    padding:2px 5px;
+} 
+.image {
+	border:none;
+	height:20px;
+	width:20px;
+}
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.ui-panel-content {
+	padding:0px 0px 0px 0px !important;
+}
+
+ .files td.name {
+	display: none;//word-break:break-all
+ }
+  .files td.size {
+	display: none;
+ }
+ .ui-fileupload .start {
+    display: none;
+}
+ .ui-fileupload .cancel {
+    display: none;
+}
+
+.ui-fileupload .progress {
+    display: none;
+}
+ 
+table {
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+table td, table th {
+    padding: 0px;
+    spacing: 0px;
+}
+
+.ui-custompanelgrid, .ui-custompanelgrid tr, .ui-custompanelgrid td {
+	border: none !important;
+	padding: 1 !important;
+	spacing: 1 !important;
+	font-weight: bold;
+	background-color: #D3D3D3 !important;
+	box-shadow: 5px 5px 2px #9EA3A3;
+}
+.skin { 
+	padding-top:0px; 
+	padding-bottom:0px;
+	cursor:default; 
+	font:menutext; 
+	position:absolute; 
+	text-align:left; 
+	font-size: 12pt; 
+	width:150px;
+	color:#ffffff;
+	border:2 solid buttonface; 
+	border:2 outset buttonhighlight; 
+}
+.background {
+	background: url("../images/moose.JPG") repeat;
+}
+.tableShaddow {
+	box-shadow: 5px 5px 2px #9EA3A3;
+}
+	</style>
+<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+<link rel="stylesheet" type="text/css" href="../css/generalStyle.css" />
+</h:head>
+
+<h:body> 
+	<div class="wrapper">
+	<ui:include src="navigationbar.xhtml" />
+	<h:form id="data">
+		<p:growl id="messages" showDetail="true"/> 
+
+		
+		<p:outputPanel id="items">
+		<p:dataTable var="nick" value="#{getTradeInfoBean.buyerNick}" style="width:100%;" >
+
+					<p:column style="width:120px;" headerText="Buyer Nick">
+						<h:outputText value="#{nick}" />
+					</p:column>							
+					<p:column style="width:120px;" headerText="Buyer Nick">
+						<h:outputText value="#{getTradeInfoBean.buyerNickToTradeStatus[nick]}" />
+					</p:column>	
+
+					<p:column headerText="Info">
+						<ui:repeat var="oid" value="#{getTradeInfoBean.buyerNickToOrders[nick]}" >
+							<table>
+								<tr>
+									<td><h:outputText value="#{oid}" /></td>
+									<td><h:outputText value="#{getTradeInfoBean.orderIDToPrice[oid]}" /></td>
+									<td><img style="width:200px;" src="#{getTradeInfoBean.picpathToPrice[oid]}" /></td>
+								</tr>
+							</table>
+						</ui:repeat>
+					</p:column>
+		</p:dataTable>
+		</p:outputPanel>
+
+	</h:form>
+	
+    <div class="push"></div>
+    </div>
+ 	<ui:include src="footer.xhtml" />			
+</h:body>
+</html>

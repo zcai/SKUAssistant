@@ -1,0 +1,94 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/tx 
+		        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		        http://www.springframework.org/schema/context 
+		        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+
+    <!-- Beans Declaration -->
+	<bean id="userData" class="com.taotu51.topclient.miscellaneous.DataSource">	 
+   
+		<property name="url" value="https://eco.taobao.com/router/rest" />	
+		<property name="appkey" value="xxxxxxxx" />	
+		<property name="secret" value="8b95b6140df4ada9fbc8253d8e641292" />	
+	</bean>
+
+	<bean id="userInfo" class="com.taotu51.topclient.model.UserInfo"/>
+	<bean id="cachedItems" class="com.taotu51.topclient.model.CachedItems"/>
+	<bean id="cachedItemsData" class="com.taotu51.topclient.model.CachedItemsData"/>
+	<bean id="cachedItemsAbstractData" class="com.taotu51.topclient.model.CachedItemsAbstractData"/>
+	
+	<!-- User Service Declaration -->
+	<bean id="userInfoService" class="com.taotu51.topclient.service.UserInfoService">
+		<property name="userInfoDAO" ref="userInfoDAO" />
+	</bean>
+	<bean id="cachedItemsService" class="com.taotu51.topclient.service.CachedItemsService">
+		<property name="cachedItemsDAO" ref="cachedItemsDAO" />
+	</bean>
+	<bean id="cachedItemsDataService" class="com.taotu51.topclient.service.CachedItemsDataService">
+		<property name="cachedItemsDataDAO" ref="cachedItemsDataDAO" />
+	</bean>	
+	<bean id="cachedItemsAbstractDataService" class="com.taotu51.topclient.service.CachedItemsAbstractDataService">
+		<property name="cachedItemsAbstractDataDAO" ref="cachedItemsAbstractDataDAO" />
+	</bean>	
+			
+	<!-- DAO Declaration -->
+	<bean id="userInfoDAO" class="com.taotu51.topclient.dao.UserInfoDAO">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="cachedItemsDAO" class="com.taotu51.topclient.dao.CachedItemsDAO">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>	
+	<bean id="cachedItemsDataDAO" class="com.taotu51.topclient.dao.CachedItemsDataDAO">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>	
+	<bean id="cachedItemsAbstractDataDAO" class="com.taotu51.topclient.dao.CachedItemsAbstractDataDAO">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>		
+				
+	<!-- Data Source Declaration -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />	
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/SKUAssistant?useUnicode=true&amp;characterEncoding=UTF-8" />	
+		<property name="user" value="root" />	
+		<property name="password" value="xxxxxx" />
+		<property name="minPoolSize" value="2"/>
+		<property name="initialPoolSize" value="10"/>
+		<property name="maxPoolSize" value="50"/>
+		<property name="idleConnectionTestPeriod" value="600"/>
+		<property name="acquireRetryAttempts" value="30"/>		
+	</bean>
+	
+	<!-- Session Factory Declaration -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.taotu51.topclient.model.UserInfo</value>
+				<value>com.taotu51.topclient.model.CachedItems</value>
+				<value>com.taotu51.topclient.model.CachedItemsData</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">validate</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- Enable the configuration of transactional behavior based on annotations -->
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+	<!-- Transaction Manager is defined -->
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+       <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+  
+</beans>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"  
+	xmlns:h="http://java.sun.com/jsf/html"      
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich">  
+<f:metadata>
+<f:event type="preRenderView" listener="#{recycledImgBean.imgRecycle}" />
+</f:metadata>	
+
+<h:head><title>图片回收站</title>
+<f:facet name="first">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</f:facet>
+
+<style>
+ui-datagrid-data { width: 1000px; }
+.ui-datagrid-content {
+	border: none;
+} 
+.image {
+	border:none;
+	height:50px;
+	width:50px;
+}
+.ui-panel-content {
+   padding:0px 0px 0px 0px !important;
+}
+.ui-panel-titlebar {
+	height: 15px;
+	font-size: 15px;
+}
+.dataGridStyle1 .ui-datagrid-column{
+	vertical-align:top; 
+	padding: 0px;
+} 
+table {
+	padding: 0;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+table tr td, table tr th {
+	border: 0px solid black;
+}
+.panelGrid tr, .panelGrid td { 
+	border: none;
+	padding: 0;
+	spacing: 0;
+}
+.httplink {
+	text-decoration: none;
+	color: #257FF5;
+	font-size: 12px;
+	cursor: pointer;
+}
+.center {
+	 margin-left:auto;
+	 margin-right:auto;
+	 width:1000px;
+ }
+</style>
+<script>
+</script>
+<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+</h:head>  
+ <body class="center" style="background:#f5f5f5;font-size: 15px;">
+ 	
+	<div class="wrapper">
+		<h:form id="titlebarForm">
+			<p:growl id="messages" showDetail="true"/>
+			<table style="width:1000px;background:#f5f5f5;color:orange;table-layout: fixed;position:fixed;">
+				<tr>					
+					<td style="width:80px;">图片回收站</td>
+					<td style="width:10px;color:black;">|</td>
+					<td style="width:80px;cursor:pointer;"><p:commandLink style="font-size: 15px !important;text-decoration: none;color:orange;" value="清空回收站" action="#{recycledImgBean.emptyRecycleBin()}" update=":recycleForm"/></td>
+					<td style="width:10px;color:black;">|</td>
+					<td></td>
+				</tr>
+			</table>
+		</h:form>
+	<br/>
+	<h:form id="recycleForm">
+		<br/>
+		<h:outputText value="回收站中没有图片" rendered="#{empty recycledImgBean.recycledImgs}" />
+		<p:growl id="messages" showDetail="true"/>
+		<p:dataGrid var="imgName" columns="4" value="#{recycledImgBean.recycledImgs}" rendered="#{not empty recycledImgBean.recycledImgs}" styleClass="dataGridStyle1">
+			<h:panelGrid columns="1" style="width:100%" styleClass="panelGrid">
+				<p:graphicImage style="width:250px;height:250px;" value="#{recycledImgBean.catalinaBase}/webapps/SKUAssistant/data/recycle/#{recycledImgBean.userNick}/#{imgName}"/>
+				<!-- under Linux, do not use the full path, use relative path instead -->
+				<!-- <p:graphicImage style="width:250px;height:250px;" value="SKUAssistant/data/recycle/#{recycledImgBean.userNick}/#{imgName}"/> -->
+				<!-- use relative path under Linux -->
+				<p:graphicImage style="width:250px;height:250px;" value="../data/recycle/#{recycledImgBean.userNick}/#{imgName}"/>
+				<!-- <h:outputText value="#{mainBean.catalinaBase}/webapps/SKUAssistant/data/recycle/#{mainBean.userNick}/#{imgName}"/>-->
+			</h:panelGrid>
+		</p:dataGrid>
+	</h:form>
+    <div class="push"></div>
+    </div>
+ 	<ui:include src="footer.xhtml" />	
+</body>
+</html>

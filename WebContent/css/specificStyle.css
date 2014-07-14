@@ -1,0 +1,254 @@
+* {
+	margin: 0;
+}
+.ui-panel-content {
+	padding:0px 0px 0px 0px !important;
+	border:0px !important;
+}
+				
+.ui-datatable tbody,
+.ui-datatable-footer,
+.ui-datatable .ui-datatable-data tr, 
+.ui-datatable .ui-datatable-data td, 
+.ui-datatable .ui-datatable-data-empty td {
+    border-style: none;
+    padding:0px 0px 0px 0px !important;
+}
+
+.ui-datatable thead th {
+	border-style: none;
+	text-align: left;
+	padding:0px 0px;
+}
+
+.panelGrid tr, .panelGrid td { 
+	border: none;
+	padding: 0px;
+	spacing: 0px;
+}
+
+.dataGridStyle1 .ui-datagrid-column{
+	vertical-align:top; 
+	padding: 0px;
+	width: 25%;
+} 
+.dataGridStyle2 .ui-datagrid-column{
+	vertical-align:top; 
+	padding: 0px;
+	width: 20%;
+} 
+/*
+.pidVid2Style2 .ui-panelgrid tr, .ui-panelgrid td {
+	width:25% !important;
+}
+*/
+
+.pidVid2Style .ui-panelgrid tr, .ui-panelgrid td {
+	width:25%;
+}
+
+.pidVidStyleColumn1 {
+	width: 40%;
+}
+ui-datagrid-data { width: 1000px; }
+.ui-datagrid-content {
+	border: none;
+}  
+.ui-panelgrid .ui-panelgrid-header{
+    text-align: left;
+ 	height: 20px;
+    padding:2px 5px;
+} 
+.image {
+	border:none;
+	height:20px;
+	width:20px;
+}
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+
+ .files td.name {
+	display: none;//word-break:break-all
+ }
+  .files td.size {
+	display: none;
+ }
+ .ui-fileupload .start {
+    display: none;
+}
+ .ui-fileupload .cancel {
+    display: none;
+}
+
+.ui-fileupload .progress {
+    display: none;
+}
+ 
+table {
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+table td, table th {
+    padding: 0px;
+    spacing: 0px;
+}
+
+.ui-custompanelgrid tr, .ui-custompanelgrid td {
+	border: none !important;
+	padding: 1 !important;
+	spacing: 1 !important;
+	font-weight: bold;
+	background-color: #D3D3D3 !important;
+}
+
+.ui-custompanelgrid {
+	border: none !important;
+	padding: 1 !important;
+	spacing: 1 !important;
+	font-weight: bold;
+	background-color: #D3D3D3 !important;
+	/*for IE, must use separate to make box-shadow to work*/
+	border-collapse:separate;
+	box-shadow: 5px 5px 2px #9EA3A3;
+	/*box-shadow: 5px 5px 2px 2px rgba(28,24,28,0.65);*/
+
+}
+.skin { 
+	padding-top:0px; 
+	padding-bottom:0px;
+	cursor:default; 
+	font:menutext; 
+	position:absolute; 
+	text-align:left; 
+	font-size: 12pt; 
+	width:150px;
+	color:#ffffff;
+	border:2 solid buttonface; 
+	border:2 outset buttonhighlight; 
+}
+.background {
+	background: url("../images/moose.JPG") repeat;
+}
+.tableShaddow {
+	box-shadow: 5px 5px 2px #9EA3A3;
+}
+.pidVid2-align td {
+	text-align: left;
+}
+.ui-menubar {
+    text-align: center;
+    width: 1000px;
+    padding: 0px;
+    background: white;
+}
+.userCatsTree {
+	/*position:fixed;*/
+	position:absolute;
+	top:5%;
+	left:0%;
+	padding:0px;
+	font-family:Arial;
+	background:#f5f5f5;
+	border:0px solid #fc0;
+}
+.userCatsMenu	{
+	/*position:fixed;*/
+	top:0%;
+	/*left:0%;*/
+	padding:0px;
+	font-family:Arial;
+	background:#fffea1;
+	border:0px solid #fc0;
+}
+.center {
+	 margin-left:auto;
+	 margin-right:auto;
+	 width:1000px;
+ }
+ .ui-menu {
+ 	border:none;
+ }
+ .ui-menuitem-text {
+ 	color: orange;
+ 	font-size: 18px;
+ }
+.ui-menuitem-parent {
+	background: white;
+}
+.ui-menuitem {
+	background: white;
+	border:none;
+	/*width: auto !important;*/
+	
+}
+/*
+.ui-dialog.ui-widget-content {
+     background-image: url("../images/loader.gif");
+     background-repeat: no-repeat;
+     background-position: center;
+}
+*/
+.dialogPoll {
+     background-image: url("../images/loader.gif");
+     background-repeat: no-repeat;
+     background-position: center;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+	/*display: none !important;*/ /*hide the title bar*/
+}
+
+/*
+.ui-dialog-titlebar-close {
+	display: none !important;
+}
+*/
+.dialogClosable .ui-dialog-titlebar-close {
+	display: none !important;
+}
+    .ui-menuitem-link .ui-corner-all .ui-state-active {
+ color: red !important;
+     }
+
+.ui-menuitem ui-state-hover {
+	background-color: black !important;
+	color: red !important;
+}
+.ui-selectonemenu-item.ui-selectonemenu-list-item.ui-state-highlight {
+    background: #a9c6c9;
+}
+
+.no-triangle .ui-icon-triangle-1-s {
+	display: none !important;
+}
+.ui-tree {
+	width: 220px;
+	background-color: rgba(245,245,245,0.2);
+	border:none;
+	box-shadow: 5px 5px 2px #9EA3A3;
+	/*
+	
+	*/		
+}
+
+.treeNode .ui-corner-all {
+	border-radius: 0px 0px 0px 0px !important;/*remove user cats treenode round corner*/
+}
+.ui-slider-horizontal .ui-slider-handle {top: -.2em;}
+
+.ui-slider .ui-slider-handle { position: absolute; width: 1.5em; height: 1.5em; cursor: default; }
+
+.ui-dialog .ui-dialog-titlebar {padding: 0em 0em 0em .1em; position: relative; border:0px; }
+
+td.wrapword {
+	word-wrap:break-word;
+	white-space: normal;/*this line is for chrome and firefox to work*/
+}
+
+.ui-tree .ui-tree-container { 
+    margin: 0px; 
+    padding: 0px;
+}

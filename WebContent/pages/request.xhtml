@@ -1,0 +1,496 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j">  
+<h:head>
+<title>All requests</title>
+<f:facet name="first">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</f:facet>
+<script>
+	function showFileUpload(sampleid){
+		//alert(sampleid);
+		document.getElementById('fileupload').style.display = "block";
+	}
+
+	function hideFileupload(){
+		document.getElementById('fileupload').style.display = "none";
+	}
+</script>
+<style>
+
+	#table-design td {
+		border: 1px;
+		padding: 0px 0px 0px 0px;
+		vertical-align: middle;
+	}
+	#table-design thead th {
+		padding-right: 10px;
+		text-align: left;
+	}
+	
+	.ui-selectonemenu label.ui-selectonemenu-label {
+		padding-right: 4px;
+		padding-left: 0px;
+		padding-top: 2px;
+		padding-buttom: 0px;
+		text-align: center;
+    }
+		
+</style>
+<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+<link rel="stylesheet" type="text/css" href="../css/generalStyle.css" />
+</h:head>
+
+<h:body>
+
+
+	<div class="wrapper">
+	<ui:include src="navigationbar.xhtml" />
+	
+    <h:form id="requestform">
+		<p:growl id="messages" showDetail="true"/>
+ 
+		<p:dataTable id="table" var="onerequest" value="#{requestBean.allRequests}" editable="true" editMode="cell" widgetVar="requestsTable" style="width:1000px;" >
+                 		
+			<p:ajax event="cellEdit" listener="#{requestBean.onRequestCellEdit}" update=":requestform:messages" />
+			<f:attribute name="requestid" value="#{onerequest.identifier}" />
+			<p:column headerText="ID">
+				<h:commandLink action="#{requestBean.listSample}" global="true">
+					<h:outputText value="#{onerequest.identifier}" />
+					<f:setPropertyActionListener target="#{requestBean.identifier}" value="#{onerequest.identifier}" />
+					<f:setPropertyActionListener target="#{requestBean.status}" value="#{onerequest.status}" />
+					<f:setPropertyActionListener target="#{requestBean.sampleType}" value="#{onerequest.sampleType}" />
+					<f:ajax render=":requestform:showsample :requestform:showcommand :requestform:showuserinfo"/>
+				</h:commandLink>
+			</p:column>
+			<p:column headerText="Status">
+				<p:cellEditor rendered="#{onerequest.status == 'New'}">
+					<f:facet name="output"><h:outputText value="#{onerequest.status}" /></f:facet>
+					<f:facet name="input">
+						<h:selectOneMenu value="#{requestBean.status}" style="width:100%">
+							<f:selectItem itemValue="New" itemLabel="Select" />
+							<f:selectItem itemValue="New" itemLabel="New" />
+							<f:selectItem itemValue="Submitted" itemLabel="Submitted" />
+						</h:selectOneMenu>
+					</f:facet>
+				</p:cellEditor>
+				<p:cellEditor rendered="#{onerequest.status != 'New' and loginBean.isAdmin}">
+					<f:facet name="output"><h:outputText value="#{onerequest.status}" /></f:facet>
+					<f:facet name="input">
+						<h:selectOneMenu value="#{requestBean.status}" style="width:100%">
+							<f:selectItem itemValue="Submitted" itemLabel="Select" />
+							<f:selectItem itemValue="Received" itemLabel="Received" />
+							<f:selectItem itemValue="Completed" itemLabel="Completed" />
+						</h:selectOneMenu>
+					</f:facet>
+				</p:cellEditor>				
+				<h:outputText value="#{onerequest.status}" rendered="#{onerequest.status != 'New' and not loginBean.isAdmin}"/>
+			</p:column>
+			<p:column headerText="Creation">
+				<h:outputText value="#{onerequest.creation}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Submission">
+				<h:outputText value="#{onerequest.submission}" >
+					<f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Size">
+				<h:outputText value="#{fn:length(onerequest.sample)}" />
+			</p:column>
+			<p:column>
+				<h:commandLink action="#{requestBean.deleteRequest}" rendered="#{onerequest.status == 'New'}">
+					<h:outputText value="Remove" />
+					<f:setPropertyActionListener target="#{requestBean.identifier}" value="#{onerequest.identifier}" />
+					<f:ajax render=":requestform:table"/>
+				</h:commandLink>
+			</p:column>   
+			<f:facet name="footer">
+				<h:outputText value="#{requestBean.pageNumber}" />
+				<h:outputText value="/" />
+				<h:outputText value="#{requestBean.pageCount}" />
+				
+				<p:commandLink action="#{requestBean.firstPage}" update=":requestform:table" rendered="#{requestBean.pageNumber != 1}">
+					<h:graphicImage value="../images/first.png" alt="first" class="image2"/>
+				</p:commandLink>
+				<h:graphicImage class="image2" value="../images/first-not-active.png" rendered="#{requestBean.pageNumber == 1}"></h:graphicImage>
+				
+				<p:commandLink action="#{requestBean.previousPage}" update=":requestform:table" rendered="#{requestBean.pageNumber > 1}">
+					<h:graphicImage value="../images/previous.png" alt="previous" class="image2"/>
+				</p:commandLink> 
+				<h:graphicImage class="image2" value="../images/previous-not-active.png" rendered="#{1 >= requestBean.pageNumber}"></h:graphicImage>
+
+				<p:commandLink action="#{requestBean.nextPage}" update=":requestform:table" rendered="#{requestBean.pageCount > requestBean.pageNumber}">
+					<h:graphicImage value="../images/next.png" alt="next" class="image2"/>
+				</p:commandLink> 
+				<h:graphicImage class="image2" value="../images/next-not-active.png" rendered="#{requestBean.pageNumber >= requestBean.pageCount}"></h:graphicImage>
+
+				<p:commandLink action="#{requestBean.lastPage}" update=":requestform:table" rendered="#{requestBean.pageNumber != requestBean.pageCount}">
+					<h:graphicImage value="../images/last.png" alt="last" class="image2"/>
+				</p:commandLink> 												
+				<h:graphicImage class="image2" value="../images/last-not-active.png" rendered="#{requestBean.pageNumber == requestBean.pageCount}"></h:graphicImage>
+				
+				<p:selectOneMenu value="#{requestBean.pageSize}" style="height:25px;width:60px;">
+					<p:ajax update=":requestform:table"/>
+					<f:selectItem itemValue="2" itemLabel="2" />
+					<f:selectItem itemValue="20" itemLabel="20" />
+					<f:selectItem itemValue="50" itemLabel="50" />
+				</p:selectOneMenu>
+			</f:facet> 
+			          
+		</p:dataTable>
+<div style="text-align:center;">
+<p:ajaxStatus>
+<f:facet name="start"><img src="../images/ajax-loader.gif" alt="loading......" /></f:facet>
+<f:facet name="complete"><h:outputText value="" /></f:facet>
+</p:ajaxStatus>	
+</div>
+		<h:panelGroup id="showuserinfo" rendered="#{loginBean.isAdmin}">
+			<br/><!-- cannot put the two rendered in the same component, cause an error. do not know why -->
+			<p:panelGrid id="paneluserinfo" style="width:1000px;" rendered="#{requestBean.userInfo != null}" >
+			<f:facet name="header">  
+				<p:row>
+					<p:column>User ID</p:column>
+					<p:column>Name</p:column>
+					<p:column>Email</p:column>
+					<p:column>Telephone</p:column>
+					<p:column>Department</p:column>
+					<p:column>Cost Centers</p:column>
+				</p:row>
+			</f:facet>
+				<p:row>
+					<p:column><h:outputText value="#{requestBean.userInfo.userID}" /></p:column>
+					<p:column><h:outputText value="#{requestBean.userInfo.lastName}"/>, <h:outputText value="#{requestBean.userInfo.firstName}" /></p:column>
+					<p:column><h:outputText value="#{requestBean.userInfo.email}" /></p:column>
+					<p:column><h:outputText value="#{requestBean.userInfo.telephone}" /></p:column>
+					<p:column><h:outputText value="#{requestBean.userInfo.department}" /></p:column>
+					<p:column><h:outputText value="#{requestBean.userInfo.costCenter}" /></p:column>
+				</p:row>
+			</p:panelGrid>
+		</h:panelGroup>
+		
+		<br/>
+		<h:panelGroup id="showsample" >  
+			<p:contextMenu for="all_samples_MLPA" widgetVar="cMenu">     
+				<p:menuitem value="Edit Cell" icon="ui-icon-search" onclick="samplesTableMLPA.showCellEditor();return false;"/>    
+				<p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="cMenu.hide()"/>    
+			</p:contextMenu>  
+	  
+			<p:dataTable id="all_samples_MLPA" var="onesample" value="#{requestBean.allSamples}" editable="true" editMode="cell" widgetVar="samplesTableMLPA" rendered="#{fn:length(requestBean.allSamples) > 0 and requestBean.sampleType == 'MLPA'}" style="width:1000px;">  
+
+		  
+				<p:ajax event="cellEdit" listener="#{sampleMLPABean.onCellEdit}" update=":requestform:messages" />       	        	
+				<f:attribute name="sampleid" value="#{onesample.sampleid}" />
+	  
+				<p:column headerText="Sample Name">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.sampleName}" /></f:facet>  
+						<f:facet name="input"><p:inputText value="#{sampleMLPABean.sampleName}" style="width:100%"/></f:facet>  
+					</p:cellEditor>
+					<h:outputText value="#{onesample.sampleName}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+	  
+				<p:column headerText="Note">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.note}" /></f:facet>  
+						<f:facet name="input"><p:inputText value="#{sampleMLPABean.note}" style="width:100%"/></f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.note}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+
+				<p:column headerText="Probe ID">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.probeID}" /></f:facet>  
+						<f:facet name="input">  
+							<h:selectOneMenu value="#{sampleMLPABean.probeID}" style="width:100%">  
+								<f:selectItem itemValue="" itemLabel="Select" />
+								<f:selectItem itemValue="PKD1_exon46" itemLabel="PKD1_exon46" />
+								<f:selectItem itemValue="TSC1_exon8" itemLabel="TSC1_exon8" />
+								<f:selectItem itemValue="MYSZ_cre1" itemLabel="MYSZ_cre1" />
+								<f:selectItem itemValue="TSC2_exon31" itemLabel="TSC2_exon31" />
+								<f:selectItem itemValue="MYSZ_cre2" itemLabel="MYSZ_cre2" />
+							</h:selectOneMenu>                  	
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.probeID}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column> 
+			  
+				<p:column headerText="Concentration">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.concentration}" /></f:facet>  
+						<f:facet name="input">  
+							<p:inputText value="#{sampleMLPABean.concentration}" style="width:100%"/>                 
+						</f:facet>  
+					</p:cellEditor>              
+					<h:outputText value="#{onesample.concentration}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>
+				
+				<!--	
+				<p:column headerText="Concentration Unit">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.concentrationUnit}" /></f:facet>  
+						<f:facet name="input">  
+							<h:selectOneMenu value="#{sampleMLPABean.concentrationUnit}" style="width:100%">  
+								<f:selectItem itemValue="" itemLabel="Select"/>
+								<f:selectItem itemValue="ug/ul" itemLabel="&#956;g/&#956;l"/>  
+								<f:selectItem itemValue="ng/ul" itemLabel="ng/&#956;l"/>  
+							</h:selectOneMenu>                 
+						</f:facet>  
+					</p:cellEditor>              
+					<h:outputText value="#{onesample.concentrationUnit}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+				-->
+				 
+				<p:column headerText="Predict Length">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.predictLength}" /></f:facet>  
+						<f:facet name="input">  
+							<p:inputText value="#{sampleMLPABean.predictLength}" style="width:100%" />
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.predictLength}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column> 
+			
+				<p:column headerText="Actual Length">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.actualLength}" /></f:facet>  
+						<f:facet name="input">  
+							<p:inputText value="#{sampleMLPABean.actualLength}" style="width:100%" />
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.actualLength}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column> 
+
+				<p:column headerText="Files" rendered="#{requestBean.status == 'Completed' or loginBean.isAdmin}">
+					<p:commandButton action="#{fileUploadBean.passSampleid(onesample.sampleid)}" rendered="#{loginBean.isAdmin}" onclick="showFileUpload(#{onesample.sampleid});" value="Upload" global="false" style="height:20px;font-size:12px;"/>
+					<table id="table-design">
+						<ui:repeat var="onesampleattachment" value="#{onesample.attachments.toArray()}">
+							<tr>
+								<td>
+									<h:commandLink action="#{attachmentBean.downloadAttachment}">
+										<f:setPropertyActionListener target="#{attachmentBean.attachmentid}" value="#{onesampleattachment.attachmentid}" />
+										<h:outputText value="#{onesampleattachment.fileName}" />
+									</h:commandLink>
+								</td>
+							</tr>
+						</ui:repeat>
+					</table>
+				</p:column>
+				
+				<p:column  rendered="#{requestBean.status == 'New'}">
+					<h:commandLink action="#{requestBean.deleteSample}" rendered="#{requestBean.status == 'New'}">
+						<h:outputText value="Remove" />
+						 <f:setPropertyActionListener target="#{requestBean.identifier}" value="#{requestBean.identifier}" />
+						 <f:setPropertyActionListener target="#{requestBean.sampleid}" value="#{onesample.sampleid}" />
+						 <f:setPropertyActionListener target="#{requestBean.status}" value="#{requestBean.status}" />
+						 <f:ajax render=":requestform:showsample :requestform:table"/>
+					</h:commandLink>
+					<h:outputText value="" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+				<!-- 
+				<p:column rendered="#{loginBean.isAdmin}">
+					<h:commandButton onclick="showFileUpload(#{onesample.sampleid});" type="button" value="Upload" />
+				</p:column>
+				 -->
+				<f:facet name="footer">  
+					All samples in the request <h:outputText value="#{requestBean.identifier}" />
+				</f:facet> 				 
+			</p:dataTable>  
+
+
+
+
+			<p:contextMenu for="all_samples_PCR" widgetVar="cMenu">     
+				<p:menuitem value="Edit Cell" icon="ui-icon-search" onclick="samplesTablePCR.showCellEditor();return false;"/>    
+				<p:menuitem value="Hide Menu" icon="ui-icon-close" onclick="cMenu.hide()"/>    
+			</p:contextMenu>   
+			<p:dataTable id="all_samples_PCR" var="onesample" value="#{requestBean.allSamples}" editable="true" editMode="cell" widgetVar="samplesTablePCR" rendered="#{fn:length(requestBean.allSamples) > 0 and requestBean.sampleType == 'PCR'}" style="width:1000px;">  
+				<f:facet name="header">  
+					All samples in the request <h:outputText value="#{requestBean.identifier}" />
+				</f:facet>  
+		  
+				<p:ajax event="cellEdit" listener="#{samplePCRBean.onCellEdit}" update=":requestform:messages" />       	        	
+				<f:attribute name="sampleid" value="#{onesample.sampleid}" />
+				<p:column headerText="Sample Name">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.sampleName}" /></f:facet>  
+						<f:facet name="input"><p:inputText value="#{samplePCRBean.sampleName}" style="width:100%"/></f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.sampleName}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+		  
+				<p:column headerText="Primer">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.primer}" /></f:facet>  
+						<f:facet name="input">
+							<h:selectOneMenu value="#{samplePCRBean.primer}" style="width:100%">  
+								<f:selectItem itemValue="" itemLabel="Select"/>
+								<f:selectItem itemValue="M13F" itemLabel="M13 Forward" />
+								<f:selectItem itemValue="M13R" itemLabel="M13 Reverse" />
+								<f:selectItem itemValue="SP6" itemLabel="SP6" />
+								<f:selectItem itemValue="T7" itemLabel="T7" />
+								<f:selectItem itemValue="T3" itemLabel="T3" /> 
+								<f:selectItem itemValue="Custom" itemLabel="Custom" />
+							</h:selectOneMenu>          
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.primer}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+
+				<p:column headerText="Primer included">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.primersIncluded}" /></f:facet>  
+						<f:facet name="input">  
+							<h:selectOneMenu value="#{samplePCRBean.primersIncluded}" style="width:100%">  
+						    	<f:selectItem itemValue="true" itemLabel="Yes" />
+						    	<f:selectItem itemValue="false" itemLabel="No" />
+							</h:selectOneMenu>                 
+						</f:facet>  
+					</p:cellEditor> 
+					<h:outputText value="#{onesample.primersIncluded}" rendered="#{requestBean.status != 'New'}"/>             
+				</p:column> 
+
+
+				<p:column headerText="Template Length">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.templateLength}" /></f:facet>  
+						<f:facet name="input">  
+							<p:inputText value="#{samplePCRBean.templateLength}" style="width:100%" title="Template Length"/>
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.templateLength}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column> 
+				
+				<p:column headerText="Template Type">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.type}" /></f:facet>  
+						<f:facet name="input">  
+							<h:selectOneMenu value="#{samplePCRBean.type}" style="width:100%">  
+								<f:selectItem itemValue="" itemLabel="Select"/>
+						         <f:selectItem itemValue="standard" itemLabel="Standard" />
+						         <f:selectItem itemValue="custom" itemLabel="Custom" />
+							</h:selectOneMenu>                 
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.type}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column> 								
+
+						  
+				<p:column headerText="Concentration">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.concentration}" /></f:facet>  
+						<f:facet name="input">  
+							<p:inputText value="#{samplePCRBean.concentration}" style="width:100%"/>                 
+						</f:facet>  
+					</p:cellEditor> 
+					<h:outputText value="#{onesample.concentration}" rendered="#{requestBean.status != 'New'}"/>             
+				</p:column>  
+				
+				<!-- 
+				<p:column headerText="Concentration Unit">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.concentrationUnit}" /></f:facet>  
+						<f:facet name="input">  
+							<h:selectOneMenu value="#{samplePCRBean.concentrationUnit}" style="width:100%">  
+								<f:selectItem itemValue="" itemLabel="Select"/>
+								<f:selectItem itemValue="ug/ul" itemLabel="&#956;g/&#956;l"/>  
+								<f:selectItem itemValue="ng/ul" itemLabel="ng/&#956;l"/>  
+							</h:selectOneMenu>                 
+						</f:facet>  
+					</p:cellEditor>   
+					<h:outputText value="#{onesample.concentrationUnit}" rendered="#{requestBean.status != 'New'}"/>			
+				</p:column>  
+				-->
+				
+  
+
+				<!--
+				<p:column headerText="Template Length Unit">  
+					<p:cellEditor rendered="#{requestBean.status == 'New'}">  
+						<f:facet name="output"><h:outputText value="#{onesample.templateLengthUnit}" /></f:facet>  
+						<f:facet name="input">  
+							<h:selectOneMenu value="#{samplePCRBean.templateLengthUnit}" style="width:100%"> 
+								<f:selectItem itemValue="" itemLabel="Select"/> 
+								<f:selectItem itemValue="Kb" itemLabel="Kb"/>  
+								<f:selectItem itemValue="Mb" itemLabel="Mb"/>                     
+							</h:selectOneMenu>  
+						</f:facet>  
+					</p:cellEditor>  
+					<h:outputText value="#{onesample.templateLengthUnit}" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+				-->
+				
+				<p:column headerText="Files" rendered="#{requestBean.status == 'Completed' or loginBean.isAdmin}">
+					<p:commandButton action="#{fileUploadBean.passSampleid(onesample.sampleid)}" rendered="#{loginBean.isAdmin}" onclick="showFileUpload(#{onesample.sampleid});" value="Upload" style="height:20px;font-size:12px;"/>
+					<table id="table-design">
+						<ui:repeat var="onesampleattachment" value="#{onesample.attachments.toArray()}">
+							<tr>
+								<td>
+									<h:commandLink action="#{attachmentBean.downloadAttachment}">
+										<f:setPropertyActionListener target="#{attachmentBean.attachmentid}" value="#{onesampleattachment.attachmentid}" />
+										<h:outputText value="#{onesampleattachment.fileName}" />
+									</h:commandLink>
+								</td>
+							</tr>
+						</ui:repeat>
+					</table>
+				</p:column>
+								
+				<p:column rendered="#{requestBean.status == 'New'}">
+					<h:commandLink action="#{requestBean.deleteSample}" rendered="#{requestBean.status == 'New'}">
+						<h:outputText value="Remove" />
+						 <f:setPropertyActionListener target="#{requestBean.identifier}" value="#{requestBean.identifier}" />
+						 <f:setPropertyActionListener target="#{requestBean.sampleid}" value="#{onesample.sampleid}" />
+						 <f:setPropertyActionListener target="#{requestBean.status}" value="#{requestBean.status}" />
+						 <f:ajax render=":requestform:showsample :requestform:table"/>
+					 </h:commandLink>
+					 <h:outputText value="" rendered="#{requestBean.status != 'New'}"/>
+				</p:column>  
+				<!-- 
+				<p:column rendered="#{loginBean.isAdmin}">
+					<h:commandButton onclick="showFileUpload(#{onesample.sampleid});" type="button" value="Upload" />
+				</p:column>	
+				 -->	
+				 		 		 
+			</p:dataTable>  
+		</h:panelGroup>
+    
+		<h:panelGroup id="showcommand">
+			<h:commandLink action="#{requestBean.addXtraSampleMLPA}" rendered="#{fn:length(requestBean.allSamples) > 0 and requestBean.status == 'New' and requestBean.sampleType == 'MLPA'}">
+				<f:setPropertyActionListener target="#{requestBean.identifier}" value="#{requestBean.identifier}" />
+				<f:ajax render=":requestform:showsample :requestform:table"/>
+				Add a sample
+			</h:commandLink>
+			<h:commandLink action="#{requestBean.addXtraSamplePCR}" rendered="#{fn:length(requestBean.allSamples) > 0 and requestBean.status == 'New' and requestBean.sampleType == 'PCR'}">
+				<f:setPropertyActionListener target="#{requestBean.identifier}" value="#{requestBean.identifier}" />
+				<f:ajax render=":requestform:showsample :requestform:table"/>
+				Add a sample
+			</h:commandLink>    
+		</h:panelGroup>
+	</h:form> 
+
+	<h:form enctype="multipart/form-data" id="fileupload" style="display:none;width:1000px;">
+		<!-- upload samples file -->
+		<p:fileUpload fileUploadListener="#{fileUploadBean.listener}" 
+			multiple="true" 
+			mode="advanced"
+			sizeLimit="100000"
+			update="messages :requestform:showsample"
+			oncomplete="hideFileupload()"
+			allowTypes="/(\.|\/)(gif|jpe?g|txt)$/" >
+		</p:fileUpload>
+		<p:growl id="messages" showDetail="true"/>
+	</h:form>
+    <div class="push"></div>
+    </div>
+ 	<ui:include src="footer.xhtml" />
+</h:body>
+</html>

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j">  
+		
+<h:head>
+<title>淘图无忧</title>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="content-language" content="zh" />
+	</f:facet>
+<style>
+
+</style>
+<link rel="stylesheet" type="text/css" href="../css/layout.css" />
+<link rel="stylesheet" type="text/css" href="../css/generalStyle.css" />
+<link rel="stylesheet" type="text/css" href="../css/customStyle.css" />
+<link rel="stylesheet" type="text/css" href="../css/ajaxLoader.css" />
+<link rel="stylesheet" type="text/css" href="../css/specificStyle.css" />
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<script src="myJavaScript.js"></script>
+</h:head>
+<!-- <body onscroll="autoScroll()"> --><!-- use CSS positioning instead of javascript -->
+<body class="center" style="background:#f5f5f5;">
+<ui:include src="navigationbar.xhtml" />
+
+<!-- http://stackoverflow.com/questions/6761263/how-to-call-bean-method-from-javascript-function-using-a4jajax-or-a4jactionlis -->
+	<h:form id="data" rendered="#{not empty mainBean.leafCidList}">
+						<a4j:jsFunction name="retrieveForSaleItems" action="#{mainBean.retrieveForSaleItems}" render=":items_data:items" oncomplete="PF('pollLoadData').stop();PF('showProgress').hide();document.getElementById('mainImg').style.display='none';">
+					   	<a4j:param name="leafnodecid"/> 
+					</a4j:jsFunction>
+					<a4j:jsFunction name="myJsFunction2" action="#{mainBean.retrieveForSaleItemsUpdate}" render=":items_data:items" oncomplete="PF('pollLoadData').stop();PF('showProgress').hide();document.getElementById('mainImg').style.display='none';">
+						<a4j:param name="leafnodecid"/> 
+					</a4j:jsFunction>
+	<div id="cats_panel">
+		<div class="userCatsTree treeNode">
+		<!-- <p:outputPanel rendered="#{fn:length(mainBean.sellerCatsMenuData.parentLevel) gt 0}"> -->
+			<h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+		    <p:tree value="#{mainBean.treeNode}" scrollable="true" var="node" id="tree" style="padding-top:10px;">
+		        <p:treeNode id="treeNode">
+		        <!-- put this section above. it will cause some strange problem: menu link not working
+					<a4j:jsFunction name="retrieveForSaleItems" action="#{mainBean.retrieveForSaleItems}" render=":items_data:items" oncomplete="PF('pollLoadData').stop();PF('showProgress').hide();document.getElementById('mainImg').style.display='none';">
+					   	<a4j:param name="leafnodecid"/> 
+					</a4j:jsFunction>
+					<a4j:jsFunction name="myJsFunction2" action="#{mainBean.retrieveForSaleItemsUpdate}" render=":items_data:items" oncomplete="PF('pollLoadData').stop();PF('showProgress').hide();document.getElementById('mainImg').style.display='none';">
+						<a4j:param name="leafnodecid"/> 
+					</a4j:jsFunction>	
+				-->				
+					<table style="border-collapse:collapse; table-layout:fixed; width:130px;"><tr><td class="wrapword">
+		            <h:outputText style="font-size:15px;" rendered="#{node.is_parent}" value="#{fn:substring(node.name,0,20)}" escape="false"/>
+					</td></tr></table>
+					<table border="0" style="border-collapse:collapse;table-layout:fixed; width:150px;"><tr>
+						<td style="width:130px;" class="wrapword">
+				            <a href="" style="font-size:15px;" title="#{node.name}" onclick="treeNodeLink('#{node.cid}');hideItem();PF('showProgress').show();PF('pollLoadData').start();">
+				            	<h:outputText rendered="#{not node.is_parent}" value="#{fn:substring(node.name,0,20)}" escape="false"/>
+				            </a>
+		            	</td>
+		            	<td style="text-align:right;">
+		            		<!-- <h:outputText value="#{node.cid}"/> -->
+		            		<!--
+		            		poll not working, use a href below instead 
+		            		<p:commandLink title="更新" action="#{mainBean.updateItems(node.cid)}" rendered="#{mainBean.cachedItemsCidSet.contains(node.cid)}" style="color:white;" styleClass="onsale" update=":items_data:items" onclick="PF('showProgress').show();PF('pollLoadData').start();" oncomplete="PF('poll').stop();PF('showProgress').hide();document.getElementById('mainImg').style.display='none';">
+		            			<h:outputText rendered="#{not node.is_parent}" value="更新"/>
+		            		</p:commandLink>
+		            		-->
+				            <a href="" title="更新" onclick="treeNodeLink2('#{node.cid}');hideItem();PF('showProgress').show();PF('pollLoadData').start();">
+		            			<h:outputText style="color:#D8D8D8;" rendered="#{not node.is_parent and mainBean.cachedItemsCidSet.contains(node.cid)}" value="更新" escape="false"/>
+				            </a>		            		
+		            	</td>
+					</tr></table>
+		        </p:treeNode>
+		    </p:tree>
+		<!-- </p:outputPanel> -->
+		<div onclick="hideCatsPanel('cats_panel');" onmouseover="" style="cursor:pointer;position:absolute;top:0;left:190px;color:red;">&#10005;</div>
+		</div>
+	</div>
+	</h:form>
+	<h:form id="showMesage">
+		<p:growl id="messages" showDetail="true"/>
+	</h:form>
+<br/>
+<div id="mainImg">
+<table background="../images/background.jpg" style="width:1000px;height:600px;">
+        <tr>
+        <td></td>
+        </tr>
+</table>
+</div>
+	<h:form id="items_data">
+		<p:growl id="messages" showDetail="true"/>
+		<p:outputPanel id="items" style="width:1000px;text-align:center;">
+			<h:inputHidden id="hidden_value" value="#{mainBean.detail_url}" />
+			<p:dataGrid styleClass="dataGridStyle1" id="datagrid" rowIndexVar="row" columns="4" var="numiid" value="#{mainBean.forSaleItemsData.numiids}" rendered="#{not empty mainBean.forSaleItemsData.numiids}" style="width:1000px;">
+				<h:panelGrid id="panelGrid" columns="1" style="width:100%;font-size:15px;background:red;" styleClass="panelGrid">
+					<p:panel id="panel" style="text-align:left;height:320px;padding-top:0px;padding-bottom:0px;padding-left:1px;padding-right:1px;" >
+					<ui:param name="current_itemData" value="#{mainBean.numiidToItemData[numiid]}"/>
+						<!-- <h:outputText value="#{mainBean.forSaleItemsData.numiidToItemData[numiid].itemImgs[0]}"/>-->
+						<p:graphicImage id="item_img" value="#{current_itemData.itemImgs[mainBean.imgIndex]}" rendered="#{current_itemData.itemImgs[mainBean.imgIndex] ne null and current_itemData.itemImgs[mainBean.imgIndex] ne 'badimg'}" style="width:100%;height:200px;" onmouseover="itemImgOnMouseOver('items_data:datagrid:#{row}', 'item_img', #{numiid})" onmouseout="hideIcon('items_data:datagrid:#{row}:replaceItemImgid');hideIcon('items_data:datagrid:#{row}:deleteItemImgid');hideIcon('items_data:datagrid:#{row}:addItemImgid');hideIcon('items_data:datagrid:#{row}:editItemImgid');" />
+						<p:graphicImage id="item_img2" value="../images/notexist.png" rendered="#{empty current_itemData.itemImgs or current_itemData.itemImgs[mainBean.imgIndex] eq null}" style="width:100%;height:200px;" onmouseover="itemImgOnMouseOver('items_data:datagrid:#{row}', 'item_img2', #{numiid})" onmouseout="hideIcon('items_data:datagrid:#{row}:replaceItemImgid');hideIcon('items_data:datagrid:#{row}:deleteItemImgid');hideIcon('items_data:datagrid:#{row}:addItemImgid');hideIcon('items_data:datagrid:#{row}:editItemImgid');"/>
+						<p:graphicImage id="item_img3" value="../images/badimg.png" rendered="#{current_itemData.itemImgs[mainBean.imgIndex] eq 'badimg'}" style="width:100%;height:200px;" onmouseover="itemImgOnMouseOver('items_data:datagrid:#{row}', 'item_img3', #{numiid})" onmouseout="hideIcon('items_data:datagrid:#{row}:replaceItemImgid');hideIcon('items_data:datagrid:#{row}:deleteItemImgid');hideIcon('items_data:datagrid:#{row}:addItemImgid');hideIcon('items_data:datagrid:#{row}:editItemImgid');"/>
+						<!-- <h:outputText value="#{mainBean.forSaleItemsData.numiidToTitle[numiid]}" /> -->
+						
+						<p:dataGrid styleClass="dataGridStyle2" id="all_item_imgs" var="pos" columns="#{mainBean.sellerInfo.itemImgNum}" value="#{mainBean.sellerInfo.itemImgNumList}" >
+							<p:panel style="text-align:left;" >
+							<!-- <h:outputText value="#{current_itemData.itemImgs[pos]}" /> -->
+							<p:graphicImage id="item_img_small" rendered="#{not empty current_itemData.itemImgs[pos] and current_itemData.itemImgs[pos] ne 'badimg'}" value="#{current_itemData.itemImgs[pos]}" style="width:100%;height:30px;" onmouseover="changeCursor('items_data:datagrid:#{row}:all_item_imgs:#{pos}:item_img_small')" onclick="showBigImg('items_data:datagrid:#{row}:all_item_imgs:#{pos}:item_img_small','#{row}','#{pos}','#{numiid}','#{current_itemData.itemImgIDs[pos]}');"/>
+							<p:graphicImage id="item_img_small2" rendered="#{empty current_itemData.itemImgs[pos] or current_itemData.itemImgs[pos] eq null}" value="../images/notexist.png" style="width:100%;height:30px;" onmouseover="changeCursor('items_data:datagrid:#{row}:all_item_imgs:#{pos}:item_img_small2')" onclick="showBigImg('items_data:datagrid:#{row}:all_item_imgs:#{pos}:item_img_small2','#{row}','#{pos}','#{numiid}','#{current_itemData.itemImgIDs[pos]}');"/>
+							<p:graphicImage id="item_img_small3" rendered="#{current_itemData.itemImgs[pos] eq 'badimg'}" value="../images/badimg.png" style="width:100%;height:30px;" onmouseover="changeCursor('items_data:datagrid:#{row}:all_item_imgs:#{pos}:item_img_small3')" onclick="showBigImg('items_data:datagrid:#{row}:all_item_imgs:#{pos}:item_img_small3','#{row}','#{pos}','#{numiid}','#{current_itemData.itemImgIDs[pos]}');"/>
+							</p:panel>
+						</p:dataGrid>
+						<!-- <h:outputText value="#{current_itemData.itemImgPositionToID['0']}" /> -->
+						<a4j:jsFunction name="setCurrentItemImgPositionAndID" action="#{mainBean.setCurrentItemImgPositionAndID}">
+							<a4j:param name="current_itemimg_position"/> 
+							<a4j:param name="numiid"/> 
+							<a4j:param name="current_itemimg_id"/> 
+							<a4j:param name="img_index"/>
+							<a4j:param name="globalsmallitemimg_id"/>
+						</a4j:jsFunction>
+						
+						<p:graphicImage id="replaceItemImgid" title="替换图片" alt="替换图片" value="../images/replace.png" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('items_data:datagrid:#{row}:replaceItemImgid');showIcon('items_data:datagrid:#{row}:deleteItemImgid');showIcon('items_data:datagrid:#{row}:editItemImgid');changeCursor('items_data:datagrid:#{row}:replaceItemImgid')" onclick="replaceItemImage('items_data:datagrid:#{row}:item_img','items_data:datagrid:#{row}:panel_content')"/>
+						<p:graphicImage id="addItemImgid" title="添加图片" alt="添加图片" value="../images/add.gif" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('items_data:datagrid:#{row}:addItemImgid');changeCursor('items_data:datagrid:#{row}:addItemImgid');" onclick="addItemImage('items_data:datagrid:#{row}:item_img','items_data:datagrid:#{row}:panel_content')"/>
+						<p:graphicImage id="deleteItemImgid" title="删除图片" alt="删除图片" value="../images/delete.gif" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('items_data:datagrid:#{row}:replaceItemImgid');showIcon('items_data:datagrid:#{row}:deleteItemImgid');showIcon('items_data:datagrid:#{row}:editItemImgid');changeCursor('items_data:datagrid:#{row}:deleteItemImgid')" onclick="deleteItemImage('items_data:datagrid:#{row}:item_img','items_data:datagrid:#{row}:panel_content')"/>
+						<!-- 
+						<p:commandLink action="#{mainBean.editImg()}" update=":editImgForm:editImgDialog" oncomplete="PF('editImg').show();">
+							<p:graphicImage id="editItemImgid" title="编辑图片" alt="编辑图片" value="../images/pen.png" style="display:none;position:absolute;width:30px;border:none;" onmouseover="showIcon('items_data:datagrid:#{row}:replaceItemImgid');showIcon('items_data:datagrid:#{row}:deleteItemImgid');showIcon('items_data:datagrid:#{row}:editItemImgid');changeCursor('items_data:datagrid:#{row}:editItemImgid')"/>
+						</p:commandLink>
+						-->
+						<p:graphicImage onclick="editImgJS();" id="editItemImgid" title="编辑图片" alt="编辑图片" value="../images/pen.png" style="display:none;position:absolute;width:30px;border:none;" onmouseover="showIcon('items_data:datagrid:#{row}:replaceItemImgid');showIcon('items_data:datagrid:#{row}:deleteItemImgid');showIcon('items_data:datagrid:#{row}:editItemImgid');changeCursor('items_data:datagrid:#{row}:editItemImgid')"/>
+				        
+				        <a4j:jsFunction name="callEditImg" action="#{mainBean.editImg}" render="editImgForm:editImgDialog" oncomplete="PF('editImg').show();">
+						</a4j:jsFunction>
+						<a4j:jsFunction name="callDeleteItemImg" render=":items_data:messages" action="#{mainBean.deleteItemImg}" oncomplete="afterItemImgDelete()">
+							<a4j:param name="numiid"/>
+							<a4j:param name="current_itemimg_id"/>
+							<a4j:param name="img_index"/>
+							<a4j:param name="globalsmallitemimg_id"/>							
+						</a4j:jsFunction>
+						
+
+						<p:graphicImage value="../images/pen.png" style="width:15px;height:15px;cursor:pointer;" onclick="editItem('items_data:datagrid:#{row}:item_title', 'items_data:datagrid:#{row}:hidden_title')"/>
+						<h:outputText id="item_title" value="#{current_itemData.title}" />
+
+						<p:inputText id="hidden_title" value="#{mainBean.title}" style="text-align:center;position:absolute;display:none;width:200px;padding:1px;">
+							<p:ajax listener="#{mainBean.updateItem(numiid,'title')}" update=":items_data:messages" onstart="document.getElementById('indicator').style.display = 'block';" oncomplete="hideEdit('items_data:datagrid:#{row}:item_title', 'items_data:datagrid:#{row}:hidden_title');document.getElementById('indicator').style.display = 'none';"/>
+						</p:inputText>
+
+
+						<br/>
+						<!-- 价格&#65509;:<a4j:outputPanel id="item_price" onclick="editItem('items_data:datagrid:#{row}:item_price', 'items_data:datagrid:#{row}:hidden_price')"><h:outputText value="#{mainBean.forSaleItemsData.numiidToItemPrice[numiid]}" /></a4j:outputPanel>--> 
+						<!-- 价格-->&#65509;:<p:graphicImage value="../images/pen.png" style="width:15px;height:15px;cursor:pointer;" onclick="editItem('items_data:datagrid:#{row}:item_price', 'items_data:datagrid:#{row}:hidden_price')"/>
+						<h:outputText id="item_price" value="#{current_itemData.itemPrice}" />
+						<p:inputText id="hidden_price" value="#{mainBean.price}" style="text-align:center;position:absolute;display:none;width:20px;padding:1px;">
+							<p:ajax listener="#{mainBean.updateItem(numiid,'price')}" update=":items_data:messages" onstart="document.getElementById('indicator').style.display = 'block';" oncomplete="hideEdit('items_data:datagrid:#{row}:item_price', 'items_data:datagrid:#{row}:hidden_price');document.getElementById('indicator').style.display = 'none';"/>
+						</p:inputText>
+							
+						库存:
+						<!-- use + and - to update stock instead -->
+						<h:outputText id="item_num" value="#{current_itemData.itemNum}" />
+						<p:inputText id="hidden_num" value="#{mainBean.num}" style="text-align:center;position:absolute;display:none;width:20px;padding:1px;">
+							<p:ajax listener="#{mainBean.updateItem(numiid,'num')}" update=":items_data:messages" onstart="document.getElementById('indicator').style.display = 'block';" oncomplete="hideEdit('items_data:datagrid:#{row}:item_num', 'items_data:datagrid:#{row}:hidden_num');document.getElementById('indicator').style.display = 'none';"/>
+						</p:inputText>
+					<h:panelGroup id="selectPic">
+					<!-- 
+					<h:selectOneMenu value="#{mainBean.imgToBeWaterMarkedtmp}" rendered="#{current_itemData.itemHasSku}" style="width:60px;">
+						<f:selectItem itemValue="mainPic" itemLabel="主图" />
+						<f:selectItem itemValue="additionalPic" itemLabel="副图" />
+						<f:selectItem itemValue="mainAndAdditionalPic" itemLabel="主+副" />
+						<f:selectItem itemValue="propPic" itemLabel="属性图" />
+						<f:selectItem itemValue="allPic" itemLabel="全部" />
+						<f:ajax listener="#{mainBean.picSelectValueChanged}" />					
+					</h:selectOneMenu>
+					<h:selectOneMenu value="#{mainBean.imgToBeWaterMarkedtmp}" rendered="#{not current_itemData.itemHasSku}" style="width:60px;">
+						<f:selectItem itemValue="mainPic" itemLabel="主图" />
+						<f:selectItem itemValue="additionalPic" itemLabel="副图" />
+						<f:selectItem itemValue="mainAndAdditionalPic" itemLabel="主+副" />
+						<f:ajax listener="#{mainBean.picSelectValueChanged}" />					
+					</h:selectOneMenu>					
+					-->
+					<h:selectOneMenu value="#{mainBean.imgToBeWaterMarkedtmp}" rendered="#{current_itemData.itemHasSku}" style="width:60px;">
+						<f:selectItem itemValue="mainAndAdditionalPic" itemLabel="主图" />
+						<f:selectItem itemValue="propPic" itemLabel="属性图" />
+						<f:selectItem itemValue="allPic" itemLabel="全部" />
+						<f:ajax listener="#{mainBean.picSelectValueChanged}" />					
+					</h:selectOneMenu>
+					<!-- 没有属性图时,不显示
+					<h:selectOneMenu value="#{mainBean.imgToBeWaterMarkedtmp}" rendered="#{not current_itemData.itemHasSku}" style="width:60px;">
+						<f:selectItem itemValue="mainAndAdditionalPic" itemLabel="主图" />
+						<f:ajax listener="#{mainBean.picSelectValueChanged}" />					
+					</h:selectOneMenu>
+					-->				
+					</h:panelGroup>				
+						<!-- 
+						<p:commandLink title="点击添加水印" action="#{mainBean.addWaterMark(numiid)}" update=":items_data:messages" rendered="#{mainBean.waterMark ne null}" style="color:white;" styleClass="linktotaobao" onclick="PF('showWaterMarkProgress').show();PF('pollWaterMark').start();" oncomplete="PF('pollWaterMark').stop();PF('showWaterMarkProgress').hide();">
+							水印
+						</p:commandLink>
+						-->
+						<a4j:jsFunction name="addWaterMarkJsFunction" action="#{mainBean.addWaterMark}" render=":items_data:items messages :addWaterMarkDialogForm:modalDialogPoll2" oncomplete="PF('pollWaterMark').stop();PF('showWaterMarkProgress').hide();">
+					   		<a4j:param name="numiid"/> 
+						</a4j:jsFunction>
+						<a href="" title="点击添加水印" style="cursor:pointer;" onclick="addWaterMark('#{numiid}');PF('showWaterMarkProgress').show();PF('pollWaterMark').start();">
+		            		<h:outputText style="color:white;" styleClass="linktotaobao" value="+水印"/>
+				        </a>
+
+<br/>					
+						<p:commandLink style="color:white;" styleClass="linktotaobao" value="淘宝" title="打开淘宝页面" action="#{mainBean.getItemDetailUrl}" update=":items_data:hidden_value" oncomplete="redirectToUrl()">
+							<f:setPropertyActionListener target="#{mainBean.numiid}" value="#{numiid}" />						
+						</p:commandLink>
+						<!-- 
+						<p:commandLink title="查看宝贝详情" action="#{mainBean.showItemDetail(numiid)}" update=":one_item_data:onenumiid" rendered="#{current_itemData.itemHasSku}" onclick="showItem();showAjaxIndicatorEvent(event);" oncomplete="scrollPage();hideAjaxIndicator();" style="color:white;" styleClass="itemdetail">
+							宝贝详情
+						</p:commandLink>
+						-->
+						<p:commandLink title="查看宝贝详情" action="#{mainBean.showItemDetail}" update=":one_item_data:onenumiid" rendered="#{current_itemData.itemHasSku}" onclick="showItem();showAjaxIndicatorEvent(event);" oncomplete="scrollPage();hideAjaxIndicator();" style="color:white;" styleClass="itemdetail">
+							宝贝详情
+							<f:setPropertyActionListener target="#{mainBean.numiid}" value="#{numiid}" />
+						</p:commandLink>
+						
+						<!-- 
+						<a href="" title="查看宝贝详情" onclick="showItemDetailJS('#{numiid}');showItem();showAjaxIndicatorEvent(event);">
+		            		<h:outputText style="color:white;font-size:10px;" styleClass="itemdetail" value="宝贝详情" rendered="#{current_itemData.itemHasSku}"/>
+				        </a>
+						<a4j:jsFunction name="showItemDetailCalled" action="#{mainBean.showItemDetail}" render=":one_item_data:onenumiid" oncomplete="scrollPage();hideAjaxIndicator();">
+							<a4j:param name="numiid"/> 
+						</a4j:jsFunction>
+						-->
+																		
+						<!-- <h:outputText value="#{numiid}" /> -->
+						<!-- <h:outputText value="#{current_itemData.hasShowcase}"/> -->
+
+						<p:commandLink id="cancelRecom" value="推荐中" title="点击取消推荐" action="#{mainBean.recommendItem}" rendered="#{current_itemData.hasShowcase}" style="color:white;" styleClass="recommend" onclick="recomChange('items_data:datagrid:#{row}:cancelRecom');showAjaxIndicatorEvent(event);" oncomplete="afterRecommendOperation('items_data:datagrid:#{row}:cancelRecom',args);hideAjaxIndicator();" update=":items_data:messages">
+							<f:setPropertyActionListener target="#{mainBean.numiid}" value="#{numiid}" />
+						</p:commandLink>
+						<p:commandLink id="doRecom" value="未推荐" title="点击推荐" action="#{mainBean.recommendItem}" rendered="#{not current_itemData.hasShowcase}" style="color:white;" styleClass="notrecommend" onclick="recomChange('items_data:datagrid:#{row}:doRecom');showAjaxIndicatorEvent(event);" oncomplete="afterRecommendOperation('items_data:datagrid:#{row}:doRecom',args);hideAjaxIndicator();" update=":items_data:messages">
+							<f:setPropertyActionListener target="#{mainBean.numiid}" value="#{numiid}" />
+						</p:commandLink>
+						
+						<a4j:jsFunction name="recomChangeCalled" async="false" action="#{mainBean.setParamForRecom}">
+							<a4j:param name="isRecommended"/> 
+						</a4j:jsFunction>
+						
+						<p:commandLink id="onsale" value="在售" title="点击下架" action="#{mainBean.approveStatusChange}" rendered="#{current_itemData.approveStatus == 'onsale'}" style="color:white;" styleClass="onsale" onclick="approveStatusChange('items_data:datagrid:#{row}:onsale');showAjaxIndicatorEvent(event);" oncomplete="afterChangeApproveStatus('items_data:datagrid:#{row}:onsale',args);hideAjaxIndicator();" update=":items_data:messages">
+							<!-- <f:setPropertyActionListener target="#{mainBean.approveStatus}" value="onsale" /> -->
+							<f:setPropertyActionListener target="#{mainBean.numiid}" value="#{numiid}" />
+						</p:commandLink>
+						<p:commandLink id="instock" value="库存" title="点击上架" action="#{mainBean.approveStatusChange}" rendered="#{current_itemData.approveStatus == 'instock'}" style="color:white;" styleClass="instock" onclick="approveStatusChange('items_data:datagrid:#{row}:instock');showAjaxIndicatorEvent(event);" oncomplete="afterChangeApproveStatus('items_data:datagrid:#{row}:instock',args);hideAjaxIndicator();" update=":items_data:messages">
+							<!-- <f:setPropertyActionListener target="#{mainBean.approveStatus}" value="instock" /> -->
+							<f:setPropertyActionListener target="#{mainBean.numiid}" value="#{numiid}" />
+						</p:commandLink>
+									
+						<a4j:jsFunction name="approveStatusChangeCalled" action="#{mainBean.setParamForApproveStatus}">
+							<a4j:param name="approveStatus"/> 
+						</a4j:jsFunction>
+																									
+						<p:commandLink value="+" title="增加库存" action="#{mainBean.updateItemQuantity(numiid,'plus')}" update=":one_item_data:messages,item_num" rendered="#{not current_itemData.itemHasSku}" style="color:white;" styleClass="plus" onclick="setStockChangeValue('items_data:datagrid:#{row}:numOfstockIncrease');showAjaxIndicatorEvent(event);" oncomplete="hideAjaxIndicator();">
+							<!-- <img src="../images/plus.png" class="image"/> -->
+						</p:commandLink>
+						<p:commandLink value="-" title="减少库存" action="#{mainBean.updateItemQuantity(numiid,'minus')}" update=":one_item_data:messages,item_num" rendered="#{not current_itemData.itemHasSku}" style="color:white;" styleClass="minus" onclick="setStockChangeValue('items_data:datagrid:#{row}:numOfstockIncrease');showAjaxIndicatorEvent(event);" oncomplete="hideAjaxIndicator();">
+							<!-- <img src="../images/minus.png" class="image"/> -->
+						</p:commandLink>
+						<a4j:jsFunction name="callSetNumOfstockIncrease" action="#{mainBean.setQuantityByAjax}">
+							<a4j:param name="num_of_stock_change"/>
+						</a4j:jsFunction>
+						<p:inputText id="numOfstockIncrease" value="#{mainBean.defaultQuantityChange}" style="width:25px;padding:1px;" rendered="#{not current_itemData.itemHasSku}"/>
+						<!-- <h:outputText value="件" rendered="#{not mainBean.forSaleItemsData.numiidToHasSku[numiid]}"/> -->
+
+					</p:panel>
+				</h:panelGrid>
+
+			</p:dataGrid>
+		</p:outputPanel>
+	</h:form>
+		
+	<div id="anchorPanel"></div>
+	
+	<h:form id="one_item_data">
+		<p:growl id="messages" showDetail="true">
+			<!-- http://stackoverflow.com/questions/7852115/how-to-call-a-javascript-function-on-render-in-jsf-1-2-richfaces-3-3 -->
+			<script type="text/javascript">hideAjaxIndicator();</script>
+		</p:growl>
+		<p:outputPanel id="onenumiid" style="width:1000px;">
+		<p:dataGrid styleClass="dataGridStyle1" id="onenumiidgrid" rowIndexVar="row" columns="4" var="pidVid1" value="#{mainBean.itemData.pidVid1s}" rendered="#{not empty mainBean.itemData.pidVid1s}" style="width:1000px;">
+			<!-- <p:panel header="#{mainBean.itemData.propertyToAlias[pidVid1] } #{mainBean.itemData.pidVid1ToName[pidVid1]} &#65509;: #{mainBean.itemData.pidVid1ToPrice[pidVid1]}" style="text-align:center;" rendered="#{pidVid1 != 'new'}" > -->
+			<p:panel id="panel" rendered="#{pidVid1 != 'new'}" style="padding-top:0px;padding-bottom:0px;padding-left:0px;padding-right:0px;">
+			<div class="titlebackgrnd">
+			<h:outputText value="#{mainBean.itemData.propertyToAlias[pidVid1]}"/>
+			<h:outputText value="#{mainBean.itemData.pidVid1ToName[pidVid1]}"/>
+			<p:spacer width="20px" height="10" />
+			<h:outputText id="sku_price" value="#{mainBean.itemData.pidVid1ToPrice[pidVid1]}"/>
+			<!-- <p:graphicImage value="../images/pen.png" style="width:15px;height:15px;cursor:pointer;" onclick="editItem('one_item_data:onenumiidgrid:#{row}:sku_price', 'one_item_data:onenumiidgrid:#{row}:hidden_sku_price')"/> -->
+			<h:outputText id="item_num" value="#{mainBean.numiidToItemData.numiidToItemNum[numiid]}" />
+			<p:inputText id="hidden_sku_price" value="#{mainBean.price}" style="text-align:center;position:absolute;display:none;width:20px;">
+				<p:ajax listener="#{mainBean.updateItem(numiid,'price')}" oncomplete="hideEdit('items_data:datagrid:#{row}:item_price', 'items_data:datagrid:#{row}:hidden_price')"/>
+			</p:inputText>
+			</div>
+				<p:panelGrid columns="1" style="width:100%;font-size:15px;" styleClass="panelGrid">
+					<!-- <img src="#{mainBean.itemData.propToImg[pidVid1]}" style="width:100%;"/> -->
+					<ui:param name="reformatted_pidVid1" value="#{fn:replace(pidVid1, ':', ',')}" />				  
+					<!-- ':' cannot be a parameter of javascript function, so replaced it and used the reformatted one in the javascript function below -->
+					<p:graphicImage id="item_propimg" value="#{mainBean.itemData.propToImg[pidVid1]}" rendered="#{not empty mainBean.itemData.propToImg[pidVid1]}" style="width:100%;" onmouseover="itemPropImgOnMouseOver('one_item_data:onenumiidgrid:#{row}:item_propimg', #{reformatted_pidVid1}, 'one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');itemPropImgOnMouseOver('one_item_data:onenumiidgrid:#{row}:item_propimg', #{reformatted_pidVid1}, 'one_item_data:onenumiidgrid:#{row}:editItemPropImgid')" onmouseout="hideEditPen('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');hideEditPen('one_item_data:onenumiidgrid:#{row}:editItemPropImgid')"/>
+					<p:graphicImage id="item_propimg2" value="../images/notexist.png" rendered="#{empty mainBean.itemData.propToImg[pidVid1]}" style="width:100%;" onmouseover="itemPropImgOnMouseOver('one_item_data:onenumiidgrid:#{row}:item_propimg2', #{reformatted_pidVid1}, 'one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid')" onmouseout="hideEditPen('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid')"/>
+					<p:graphicImage id="replaceItemPropImgid" title="替换图片" alt="替换图片" value="../images/replace.png" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');showIcon('one_item_data:onenumiidgrid:#{row}:editItemPropImgid');changeCursor('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');" onclick="setPropImgPanelElm('one_item_data:onenumiidgrid:#{row}:panel_content');replaceItemPropImgage();"/>
+<!--
+<p:commandLink action="#{mainBean.editPropImg('#{mainBean.itemData.propToImg[pidVid1]}','#{pidVid1}')}" update=":editImgForm:editImgDialog" oncomplete="PF('editImg').show();">
+	<p:graphicImage id="editItemPropImgid" title="编辑图片" alt="编辑图片" value="../images/pen.png" style="display:none;position:absolute;width:30px;border:none;" onmouseover="showIcon('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');showIcon('one_item_data:onenumiidgrid:#{row}:editItemPropImgid');changeCursor('one_item_data:onenumiidgrid:#{row}:editItemPropImgid')"/>
+</p:commandLink>
+-->
+<!-- 
+<h:commandLink action="#{mainBean.editPropImg()}" onclick="PF('editImg').show();return false;">
+	<p:graphicImage id="editItemPropImgid" title="编辑图片" alt="编辑图片" value="../images/pen.png" style="display:none;position:absolute;width:30px;border:none;" onmouseover="showIcon('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');showIcon('one_item_data:onenumiidgrid:#{row}:editItemPropImgid');changeCursor('one_item_data:onenumiidgrid:#{row}:editItemPropImgid')"/>
+	<f:setPropertyActionListener target="#{mainBean.propImgUrl}" value="#{mainBean.itemData.propToImg[pidVid1]}"/>
+	<f:setPropertyActionListener target="#{mainBean.pidVid1}" value="#{pidVid1}"/>
+	<f:ajax render=":editImgForm:editImgDialog"/>
+</h:commandLink>
+-->
+					<a4j:jsFunction name="editPropImgJsFunction" action="#{mainBean.editPropImg}" render=":editImgForm:editImgDialog" oncomplete="PF('editImg').show();">
+						<a4j:param name="propImgUrl"/> 
+						<a4j:param name="pidVid1"/> 
+					</a4j:jsFunction>
+					<p:graphicImage id="editItemPropImgid" title="编辑图片" alt="编辑图片" value="../images/pen.png" style="display:none;position:absolute;width:30px;border:none;" onclick="editPropImg('#{mainBean.itemData.propToImg[pidVid1]}','#{pidVid1}');" onmouseover="showIcon('one_item_data:onenumiidgrid:#{row}:replaceItemPropImgid');showIcon('one_item_data:onenumiidgrid:#{row}:editItemPropImgid');changeCursor('one_item_data:onenumiidgrid:#{row}:editItemPropImgid')"/>
+
+
+					<p:dataGrid id="pidVid2" rowIndexVar="subrow" columns="1" var="pidVid2" value="#{mainBean.itemData.pidVid1ToPidVid2[pidVid1]}" style="text-align:left;" styleClass="hide-column-names" >         			
+						<!-- <h:outputText value="#{pidVid2}"/> -->
+						<p:panelGrid style="width:100%;text-align:left;" rendered="#{pidVid2 != 'new'}">
+							<ui:param name="pidVid1_pidVid2" value="#{pidVid1};#{pidVid2};" rendered="#{mainBean.itemData.itemHasTwoSku}"/>
+							<ui:param name="pidVid1_pidVid2OneSku" value="#{pidVid1};" rendered="#{not mainBean.itemData.itemHasTwoSku}"/>
+							<p:row>
+								<p:column id="column" style="width:40%">
+								<p:outputPanel id="skuStockNum">
+									<h:outputText value="#{mainBean.itemData.pidVid2ToName[pidVid2]}" rendered="#{mainBean.itemData.propertyToAlias[pidVid2] == null}"/>
+									<h:outputText value="#{mainBean.itemData.propertyToAlias[pidVid2]}" rendered="#{mainBean.itemData.propertyToAlias[pidVid2] != null}"/>
+									
+									<h:outputText value="["/>
+									<h:outputText style="color:red;font-weight:bold;" value="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2]}" rendered="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2] gt 0 and mainBean.itemData.itemHasTwoSku}" />
+									<h:outputText style="color:red;font-weight:bold;" value="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2OneSku]}" rendered="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2OneSku] gt 0 and not mainBean.itemData.itemHasTwoSku}" />
+									<h:outputText style="color:grey;font-weight:bold;" value="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2]}" rendered="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2] le 0 and mainBean.itemData.itemHasTwoSku}" />
+									<h:outputText style="color:grey;font-weight:bold;" value="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2OneSku]}" rendered="#{mainBean.itemData.propertiesToQuantity[pidVid1_pidVid2OneSku] le 0 and not mainBean.itemData.itemHasTwoSku}" />
+									<h:outputText value="]"/>
+								</p:outputPanel>								
+								</p:column>
+								<p:column style="width:15%">
+									<h:commandLink value="+" title="增加库存" action="#{mainBean.updateSkuQuantity}" style="color:white;font-size:15px;" styleClass="plus" onclick="setSkuStockChangeValue('one_item_data:onenumiidgrid:#{row}:pidVid2:#{subrow}:numOfSkuStockChange');showAjaxIndicatorEvent(event);" oncomplete="hideAjaxIndicator();" rendered="#{mainBean.itemData.itemHasTwoSku}">
+										<f:setPropertyActionListener target="#{mainBean.skuProperties}" value="#{pidVid1_pidVid2}"/>
+										<f:setPropertyActionListener target="#{mainBean.skuChange}" value="plus" />
+										<f:ajax render=":one_item_data:messages skuStockNum" />
+									</h:commandLink>
+									<h:commandLink value="+" title="增加库存" action="#{mainBean.updateSkuQuantity}" style="color:white;font-size:15px;" styleClass="plus" onclick="setSkuStockChangeValue('one_item_data:onenumiidgrid:#{row}:pidVid2:#{subrow}:numOfSkuStockChange');showAjaxIndicatorEvent(event);" oncomplete="hideAjaxIndicator();" rendered="#{not mainBean.itemData.itemHasTwoSku}">
+										<f:setPropertyActionListener target="#{mainBean.skuProperties}" value="#{pidVid1_pidVid2OneSku}"/>
+										<f:setPropertyActionListener target="#{mainBean.skuChange}" value="plus" />
+										<f:ajax render=":one_item_data:messages skuStockNum" />
+									</h:commandLink>							
+								
+								</p:column>
+								<p:column style="width:15%">
+									<h:commandLink value="-" title="减少库存" action="#{mainBean.updateSkuQuantity}" style="color:white;font-size:15px;" styleClass="minus" onclick="setSkuStockChangeValue('one_item_data:onenumiidgrid:#{row}:pidVid2:#{subrow}:numOfSkuStockChange');showAjaxIndicatorEvent(event);" rendered="#{mainBean.itemData.itemHasTwoSku}">
+										<f:setPropertyActionListener target="#{mainBean.skuProperties}" value="#{pidVid1_pidVid2}"/>
+										<f:setPropertyActionListener target="#{mainBean.skuChange}" value="minus" />
+										<f:ajax render=":one_item_data:messages skuStockNum" />
+									</h:commandLink>
+									<h:commandLink value="-" title="减少库存" action="#{mainBean.updateSkuQuantity}" style="color:white;font-size:15px;" styleClass="minus" onclick="setSkuStockChangeValue('one_item_data:onenumiidgrid:#{row}:pidVid2:#{subrow}:numOfSkuStockChange');showAjaxIndicatorEvent(event);" rendered="#{not mainBean.itemData.itemHasTwoSku}">
+										<f:setPropertyActionListener target="#{mainBean.skuProperties}" value="#{pidVid1_pidVid2OneSku}"/>
+										<f:setPropertyActionListener target="#{mainBean.skuChange}" value="minus" />
+										<f:ajax render=":one_item_data:messages skuStockNum" />
+									</h:commandLink>							
+								</p:column>
+								<p:column>
+									<a4j:jsFunction name="callSetNumOfSkuStockChange" action="#{mainBean.setQuantityByAjax}">
+										<a4j:param name="num_of_stock_change"/>
+									</a4j:jsFunction>
+									<p:inputText id="numOfSkuStockChange" title="#{mainBean.itemData.skuPropertiesToSkuid[pidVid1_pidVid2]}" value="#{mainBean.defaultQuantityChange}" style="width:25px;padding:1px;"/>
+									<h:outputText value="件"/>
+								</p:column>
+								<!-- 
+								<p:column>
+									<h:commandLink action="#{mainBean.doNothing}" onclick="showSameSizeSku(event);">
+										<img src="../images/txt2.png" class="image"/>
+										<f:setPropertyActionListener target="#{mainBean.skuProperties}" value="#{pidVid1};#{pidVid2}" />
+										<f:ajax render=":one_item_data:messages"/>
+									</h:commandLink>
+								</p:column>
+								-->
+							</p:row>
+						</p:panelGrid >
+												 
+						<p:panelGrid style="width:100%;text-align:left;" rendered="#{pidVid2 == 'new' and mainBean.itemData.itemHasTwoSku}">
+							<ui:param name="numOfPidVid2" value="#{fn:length(mainBean.itemData.pidVid1ToPidVid2[pidVid1])}" />
+							<p:row>
+								<p:column id="columnnew" style="width:40%">
+									<h:commandLink value="添加..." action="#{mainBean.doNothing}" onclick="showNewSizeSku(event);setPropImgPanelElm('one_item_data:onenumiidgrid:#{row}:panel_content');" style="margin:0" styleClass="addnewbutton">
+										<f:setPropertyActionListener target="#{mainBean.pidVid1}" value="#{pidVid1}" />
+										<f:setPropertyActionListener target="#{mainBean.price}" value="#{mainBean.itemData.pidVid1ToPrice[pidVid1]}" />
+										<f:ajax render=":newSizeSku:panelgrid"/>
+									</h:commandLink>								
+								</p:column>
+								<p:column style="width:15%">
+									<h:commandLink value="A+" title="增加库存" action="#{mainBean.updateSkuQuantityInBatch}" style="color:white;font-size:15px;" styleClass="plus" onclick="setSkuBatchUpdate('#{row}','#{numOfPidVid2}','plus');showAjaxIndicatorEvent(event);">
+										<f:setPropertyActionListener target="#{mainBean.skuChange}" value="plus" />
+										<f:ajax render=":one_item_data:messages :one_item_data:onenumiidgrid" />
+									</h:commandLink>	
+								</p:column>
+								<p:column style="width:15%">
+									<h:commandLink value="A-" title="减少库存" action="#{mainBean.updateSkuQuantityInBatch}" style="color:white;font-size:15px;" styleClass="minus" onclick="setSkuBatchUpdate('#{row}','#{numOfPidVid2}','minus');showAjaxIndicatorEvent(event);">
+										<!-- <img src="../images/minus.png" class="image"/> -->
+										<f:setPropertyActionListener target="#{mainBean.skuChange}" value="minus" />
+										<f:ajax render=":one_item_data:messages :one_item_data:onenumiidgrid" />
+									</h:commandLink>								
+								</p:column>
+								<p:column>
+									<a4j:jsFunction name="callSetSkuNumBatchUpdate" action="#{mainBean.setSkuNumBatchUpdateByAjax}">
+										<a4j:param name="sku_batch_update_str"/>
+									</a4j:jsFunction>								
+								</p:column>
+							</p:row>
+						</p:panelGrid>											
+					</p:dataGrid>
+				</p:panelGrid>
+			</p:panel>
+
+			<p:panel style="text-align:left;padding:0px;" rendered="#{pidVid1 == 'new'}">
+			<div class="publishItemTitleBackgrnd">发布宝贝</div>
+				<p:panelGrid style="width:100%;font-size:15px;" styleClass="panelGrid addNewSkuTable">
+					<p:row>
+						<p:column style="width:80px"><h:outputText value="图片: " /></p:column>
+						<p:column style="width:170px">
+							<table style="border-spacing:0;border-collapse:collapse;">
+								<tr>
+									<td valign="top">
+										<p:graphicImage id="uploadedImg" style="width:50px;height:50px;vertical-align:middle;" value="../data/tmp/#{mainBean.userNick}/#{mainBean.createdFileName}"/>
+									</td>
+									<td>
+										<span id="chooseImg" onmouseover="changeCursor('chooseImg')" onclick="uploadImgForPublishItem('one_item_data:onenumiidgrid:#{row}:fileuploadlistener_input')" class="submitbutton">选择</span>
+										<div id="fileupload" style="display:none;">
+										<p:fileUpload id="fileuploadlistener" fileUploadListener="#{mainBean.fileUploadlistener}" 
+											auto="true"
+											label="选择"
+											multiple="false" 
+											mode="advanced"
+											sizeLimit="5000000"
+											update=":one_item_data:messages uploadedImg"
+											oncomplete=""
+											allowTypes="/(\.|\/)(gif|jpe?g|png)$/"/>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					
+					<p:row>
+						<p:column style="width:80px"><h:outputText value="售价: " /></p:column>
+						<p:column style="width:170px">
+							<table>
+								<tr>
+									<td colspan="2">
+										<p:inputText id="add_new_price" value="#{mainBean.price}" style="width:99%;padding-right:0px;padding-left:0px;" required="true" requiredMessage="价格必填" validatorMessage="输入了无效的价格">
+											<f:convertNumber type="number" />
+											<p:ajax event="blur" update="add_new_pricemsg" />
+										</p:inputText>
+										<p:message id="add_new_pricemsg" for="add_new_price" display="text"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					
+					<p:row>
+						<p:column style="width:80px"><h:outputText value="数量: " /></p:column>
+						<p:column style="width:170px">
+							<table>
+								<tr>
+									<td colspan="2">
+										<p:inputText id="add_new_quantity" value="#{mainBean.quantity}" style="width:99%;padding-right:0px;padding-left:0px;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					
+					<p:row>
+						<ui:param name="pid1_vid1" value="#{fn:split(mainBean.itemData.pidVid1s[0],':')}"/>
+						<p:column style="width:80px"><h:outputText value="#{mainBean.itemData.itemPropsPidToName[pid1_vid1[0]]}:"/><!-- <h:outputText value="Color: " /> --></p:column>
+						<p:column style="width:170px">
+							<table>
+								<tr>
+									<td>
+										<p:selectOneMenu id="add_new_pidVid1" value="#{mainBean.pidVid1}"  style="vertical-align:bottom;width:100%;">
+											<f:selectItems value="#{mainBean.itemData.allPidVidToNameForPid1.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+										</p:selectOneMenu> 
+									</td>
+									<td>
+										<p:watermark for="custom_new_pidVid1" value="自定义"/>
+										<p:inputText id="custom_new_pidVid1" value="#{mainBean.pidVid1Alias}" style="width:98%;padding-right:0px;padding-left:0px;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					<p:row rendered="#{mainBean.itemData.itemHasTwoSku}">
+						<ui:param name="pid2_vid2" value="#{fn:split(mainBean.itemData.allPidVidToNameForPid2.entrySet().toArray()[0],':')}"/>
+						<p:column style="width:80px"><h:outputText value="#{mainBean.itemData.itemPropsPidToName[pid2_vid2[0]]}:"/><!-- <h:outputText value="Size: " /> --></p:column>
+						<p:column style="width:170px">
+							<table>
+								<tr>
+									<td>			
+										<p:selectOneMenu id="add_new_pidVid2" value="#{mainBean.pidVid2}" style="vertical-align:bottom;width:100%;">
+											<f:selectItems value="#{mainBean.itemData.allPidVidToNameForPid2.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+										</p:selectOneMenu>
+									</td>
+									<td>
+										<p:watermark for="custom_new_pidVid2" value="自定义"/>
+										<p:inputText id="custom_new_pidVid2" value="#{mainBean.pidVid2Alias}" style="width:98%;padding-right:0px;padding-left:0px;"/>
+									</td>
+								</tr>
+							</table>
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column style="width:80px">
+						<a4j:jsFunction name="callSetAddNewPidVid1SkuParams" action="#{mainBean.setAddNewPidVid1SkuParams}">
+							<a4j:param name="price"/> 
+							<a4j:param name="quantity"/> 
+							<a4j:param name="pidVid1"/> 
+							<a4j:param name="pidVid1Alias"/> 
+							<a4j:param name="pidVid2"/> 
+							<a4j:param name="pidVid2Alias"/> 
+						</a4j:jsFunction>						
+						</p:column>
+						<p:column style="width:170px">
+							<h:commandLink value="提交" action="#{mainBean.addNewPidVid1Sku}" onclick="setAddNewPidVid1Sku(#{row});showAjaxIndicatorEvent(event);" oncomplete="hideAjaxIndicator();" styleClass="submitbutton">
+								<f:ajax render=":one_item_data:onenumiidgrid :one_item_data:messages"/>
+							</h:commandLink>
+						</p:column>
+
+					</p:row>	
+					
+
+					<!-- 
+					<p:row>
+					<p:column></p:column>
+					<p:column>
+						<h:commandLink action="#{mainBean.doNothing}" onclick="setValues('#{fn:length(mainBean.colors)-1}');positionComponent2(event)" style="margin:0" >
+							<img src="../images/add.PNG" style="width:60px;border:0px" alt="Add" />
+							<f:ajax/>
+						</h:commandLink>					
+					</p:column>
+					</p:row>
+					-->
+				</p:panelGrid>
+			</p:panel>
+		</p:dataGrid>
+		<div style="display:none;">
+		<p:fileUpload id="hidden_prop_img_fileuploader" fileUploadListener="#{mainBean.updateItemPropImgFileUploadlistener}" 
+		auto="true"
+		multiple="false" 
+		mode="advanced"
+		sizeLimit="5000000"
+		update=":one_item_data:messages :one_item_data:onenumiidgrid"
+		onstart="showAjaxIndicator2()"
+		oncomplete="hideAjaxIndicator()"
+		allowTypes="/(\.|\/)(gif|jpe?g|png)$/">
+		</p:fileUpload>
+		</div>
+		<a4j:jsFunction name="setPidVid1Function" action="#{mainBean.setPidVid1}">
+			<a4j:param name="pidVid1"/> 
+		</a4j:jsFunction>		
+		</p:outputPanel>
+	</h:form>
+
+<ui:include src="footer.xhtml" />
+
+	<h:form id="hidden_itemimg_uploader_form" style="display:none;">
+		<p:growl id="messages" showDetail="true"/>
+		<p:fileUpload id="hidden_fileuploader" fileUploadListener="#{mainBean.replaceItemImgFileUploadlistener}" 
+		auto="true"
+		multiple="false" 
+		mode="advanced"
+		sizeLimit="5000000"
+		update="messages"
+		onstart="showAjaxIndicator()"
+		oncomplete="showNewItemImg()"
+		allowTypes="/(\.|\/)(gif|jpe?g|png)$/">
+		</p:fileUpload>
+		<a4j:jsFunction name="callReplaceItemImg" action="#{mainBean.replaceItemImgSetParams}">
+			<a4j:param name="numiid"/>
+			<a4j:param name="current_itemimg_id"/>
+			<a4j:param name="img_index"/>
+			<a4j:param name="globalsmallitemimg_id"/>
+		</a4j:jsFunction>	
+	</h:form>
+
+	<!-- replace item main img, which is required and cannot be deleted -->
+	<h:form id="hidden_main_itemimg_uploader_form" style="display:none;">
+		<p:growl id="messages" showDetail="true"/>
+		<p:fileUpload id="hidden_fileuploader" fileUploadListener="#{mainBean.replaceItemImgFileUploadlistener}" 
+		auto="true"
+		multiple="false" 
+		mode="advanced"
+		sizeLimit="5000000"
+		update="messages"
+		onstart="showAjaxIndicator()"
+		oncomplete="showNewItemImg()"
+		allowTypes="/(\.|\/)(gif|jpe?g|png)$/">
+		</p:fileUpload>
+		<a4j:jsFunction name="callReplaceMainItemImg" action="#{mainBean.replaceItemImgSetParams}">
+			<a4j:param name="numiid"/>
+			<a4j:param name="current_itemimg_id"/>
+			<a4j:param name="img_index"/>
+			<a4j:param name="globalsmallitemimg_id"/>
+		</a4j:jsFunction>	
+	</h:form>
+	
+	<h:form id="hidden_itemimg_uploader_add_form" style="display:none;">
+		<p:growl id="messages" showDetail="true"/>
+		<p:fileUpload id="hidden_fileuploader" fileUploadListener="#{mainBean.addItemImgFileUploadlistener}" 
+		auto="true"
+		multiple="false" 
+		mode="advanced"
+		sizeLimit="5000000"
+		update="messages"
+		onstart="showAjaxIndicator()"
+		oncomplete="showNewItemImg();hideAjaxIndicator()"
+		allowTypes="/(\.|\/)(gif|jpe?g|png)$/">
+		</p:fileUpload>
+		<a4j:jsFunction name="callAddItemImg" action="#{mainBean.addItemImgSetParams}" >
+			<a4j:param name="numiid"/>
+			<a4j:param name="current_itemimg_id"/>
+			<a4j:param name="img_index"/>
+			<a4j:param name="globalsmallitemimg_id"/>
+		</a4j:jsFunction>	
+	</h:form>
+	
+	<!-- hidden forms -->
+	<h:form id="newSizeSku" style="display:none;position:absolute">
+		<p:growl id="messages" showDetail="true"/>
+		<p:panelGrid id="panelgrid" styleClass="ui-custompanelgrid" style="width:300px;font-size:15px;" >
+			<p:row>
+				<p:column>
+					<!--<h:outputText value="Size: " />-->
+					<ui:param name="pid2_vid2" value="#{fn:split(mainBean.itemData.allPidVidToNameForPid2.entrySet().toArray()[0],':')}"/>
+					<h:outputText value="#{mainBean.itemData.itemPropsPidToName[pid2_vid2[0]]}:"/>
+				</p:column>
+				<p:column style="width:40%;">
+					<p:selectOneMenu value="#{mainBean.pidVid2}" style="width:100%;" id="selectOneMenu">
+						<f:selectItems value="#{mainBean.itemData.availablePidVid2ForPidVid1[mainBean.pidVid1].entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+					</p:selectOneMenu>
+				</p:column>			
+				<p:column style="vertical-align:top;">
+					<p:watermark for="custom_new_pidVid2" value="自定义"/>
+					<p:inputText id="custom_new_pidVid2" value="#{mainBean.pidVid2Alias}" style="width:99%;"/>
+				</p:column>
+			</p:row>
+			<ui:param name="pid3_vid3" value="#{fn:split(mainBean.itemData.allPidVidToNameForPid3.entrySet().toArray()[0],':')}"/>
+			<p:row rendered="#{not empty mainBean.itemData.itemPropsPidToName[pid3_vid3[0]]}">
+				<p:column>
+					<h:outputText value="#{mainBean.itemData.itemPropsPidToName[pid3_vid3[0]]}:"/>
+				</p:column>
+				<p:column style="width:40%;">
+					<p:selectOneMenu value="#{mainBean.pidVid3}" style="width:100%;" id="selectOneMenu2">
+						<f:selectItems value="#{mainBean.itemData.availablePidVid3ForPidVid1[mainBean.pidVid1].entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+					</p:selectOneMenu>
+				</p:column>			
+				<p:column style="vertical-align:top;">
+					<p:watermark for="custom_new_pidVid3" value="自定义"/>
+					<p:inputText id="custom_new_pidVid3" value="#{mainBean.pidVid2Alias}" style="width:99%;"/>
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="数量: " /></p:column>
+				<p:column colspan="2"><p:inputText value="#{mainBean.quantity}" style="width:99%;"/></p:column>
+			</p:row>
+					
+			<p:row>
+				<p:column><h:outputText value="" /></p:column>
+				<p:column colspan="2">
+					<p:commandButton value="提交" action="#{mainBean.addNewPidVid2Sku}" update=":newSizeSku :newSizeSku:messages :one_item_data:onenumiidgrid" style="margin:0;" onstart="showAjaxIndicator2();" oncomplete="hideAjaxIndicator();"/>
+					<p:commandButton type="button" value="关闭" onclick="hideNewSizeSku()"/>
+				</p:column>
+			</p:row>			
+		</p:panelGrid>
+	</h:form>	
+	
+
+<h:form>			
+<p:dialog id="modalDialog" header="橱窗推荐设置" widgetVar="configShowCaseParams" modal="true" width="400px" height="200px">  
+    <h:outputText value="This is a Modal Dialog." />  
+</p:dialog> 
+</h:form>
+
+<h:form id="dialogForm">
+<p:dialog id="modalDialogPoll" styleClass="dialogPoll dialogClosable" header="正在加载数据..." widgetVar="showProgress" modal="true" width="600px" height="300px">  
+    <h:outputText id="txt_progress" value="#{mainBean.progressDataString}" escape="false"/> 
+    <p:poll interval="1" listener="#{mainBean.showProgress}"  
+            update="txt_progress" widgetVar="pollLoadData" autoStart="false"/>  
+</p:dialog> 
+</h:form>
+
+<h:form id="addWaterMarkDialogForm">
+<p:dialog id="modalDialogPoll2" header="正在添加水印..." styleClass="dialogClosable" widgetVar="showWaterMarkProgress" modal="true" width="600px" height="300px">
+	<p:outputPanel id="watermark_progress">
+		<p:dataGrid var="imgUrl" columns="4" value="#{mainBean.waterMarkedImgs}" rendered="#{not empty mainBean.waterMarkedImgs}" styleClass="dataGridStyle1">
+			<h:panelGrid columns="1" style="width:100%;text-align:center;" styleClass="dialogPoll panelGrid">
+				<p:graphicImage style="width:100px;height:100px;" value="#{imgUrl}"/>
+				<!-- <h:outputText value="#{imgUrl}"/> -->
+			</h:panelGrid>
+		</p:dataGrid>
+		<h:outputText value="#{mainBean.waterMarkCompleted}"/>
+	</p:outputPanel>
+    <p:poll interval="2" listener="#{mainBean.showProgress}"  
+            update="watermark_progress" widgetVar="pollWaterMark" autoStart="false"/>  
+</p:dialog> 
+</h:form>
+
+<h:form id="waterMarkFileUploadForm">
+	    <p:growl id="messages" showDetail="true"/>
+	    <p:fileUpload style="display:none;" id="waterMark_fileuploader" fileUploadListener="#{mainBean.waterMarkImgFileUploadlistener}" 
+		auto="true"
+		multiple="false"
+		mode="advanced"
+		sizeLimit="5000000"
+		update="messages :waterMarkForm:watermarkImg"
+		allowTypes="/(\.|\/)(gif|jpe?g|png)$/">
+		</p:fileUpload>
+		<a4j:jsFunction name="callToBeChangedWaterMarkImg" action="#{mainBean.setToBeChangedWaterMarkImg}" >
+			<a4j:param name="waterMarkImgID"/>
+		</a4j:jsFunction>
+</h:form>
+<h:form id="waterMarkForm">		
+	<a4j:jsFunction name="callWatermarkPosition" action="#{mainBean.setWatermarkPosition}" render="waterMarkPosition">
+		<a4j:param name="waterMarkPosition"/>
+	</a4j:jsFunction>
+<h:outputText style="display:none;" id="waterMarkPosition" value="#{mainBean.waterMarkPosition}"/>
+	<p:growl id="messages" showDetail="true"/>	
+	<p:dialog id="waterMarkDialog" header="设置水印..." widgetVar="setWaterMark" modal="true" width="600px" height="300px">  
+	    
+		<p:outputPanel id="outputPanel">
+
+			<table border="0" style="margin-left:0;margin-right: auto;width:570px;height:150px;">
+				<tr>
+					<td style="vertical-align:top;">
+						<p:selectBooleanCheckbox id="picCheckBox" value="#{mainBean.userInfo.picWaterMarkCheckbox}">
+							<p:ajax update="textCheckBox" listener="#{mainBean.setWaterMarkTypeListener('picWaterMark')}"/>
+						</p:selectBooleanCheckbox>
+						<h:outputText value="图片水印" />
+						<div class="updatewatermark" style="cursor:pointer;" onclick="replaceWaterMarkImg();">更新图片...</div>
+					</td>
+					<td>水印位置</td>
+					<td>水印预览</td>
+				</tr>
+				<tr>
+					<td id="watermark1" style="vertical-align:middle;">
+						<!-- 
+						<p:graphicImage id="waterMarkImg1" value="../data/waterMarkImg/#{mainBean.userNick}/#{mainBean.userInfo.waterMarkImg1}" style="width:150px;" onmouseover="configWaterMark('waterMarkForm:waterMarkImg1');" rendered="#{not empty mainBean.userInfo.waterMarkImg1}"/>
+						<p:graphicImage id="waterMarkImg11" value="../images/examplelogo1.jpg" style="width:150px;" onmouseover="configWaterMark('watermark1');" rendered="#{empty mainBean.userInfo.waterMarkImg1}"/>
+						-->
+						<h:panelGroup id="watermarkImg">
+							<p:graphicImage id="waterMarkImg1" value="../data/waterMarkImg/#{mainBean.userNick}/#{mainBean.userInfo.waterMarkImg1}" style="width:150px;vertical-align: middle;" rendered="#{not empty mainBean.userInfo.waterMarkImg1}"/>
+							<p:graphicImage id="waterMarkImg11" value="../images/examplelogo1.jpg" style="width:150px;vertical-align: middle;" rendered="#{empty mainBean.userInfo.waterMarkImg1}"/>
+						</h:panelGroup>
+					</td>
+					<td>
+						<table id="posmatrix" bordercolor="blue" border="1" style="background:#D5D5D5;">
+							<tr>
+								<td id="pos1" style="width:50px;height:50px;text-align:center;cursor:pointer;" onclick="watermarkPosition('1');javascript:this.style.background = 'blue';">1</td><td id="pos2" style="width:50px;text-align:center;cursor:pointer;" onclick="watermarkPosition('2');javascript:this.style.background = 'blue';">2</td><td id="pos3" style="width:50px;text-align:center;cursor:pointer;" onclick="watermarkPosition('3');javascript:this.style.background = 'blue';">3</td>
+							</tr>
+							<tr>
+								<td id="pos4" style="width:50px;height:50px;text-align:center;cursor:pointer;" onclick="watermarkPosition('4');javascript:this.style.background = 'blue';">4</td><td id="pos5" style="text-align:center;cursor:pointer;" onclick="watermarkPosition('5');javascript:this.style.background = 'blue';">5</td><td id="pos6" style="text-align:center;cursor:pointer;" onclick="watermarkPosition('6');javascript:this.style.background = 'blue';">6</td>
+							</tr>
+							<tr>
+								<td id="pos7" style="width:50px;height:50px;text-align:center;cursor:pointer;" onclick="watermarkPosition('7');javascript:this.style.background = 'blue';">7</td><td id="pos8" style="text-align:center;cursor:pointer;" onclick="watermarkPosition('8');javascript:this.style.background = 'blue';">8</td><td id="pos9" style="text-align:center;cursor:pointer;" onclick="watermarkPosition('9');javascript:this.style.background = 'blue';">9</td>
+							</tr>
+						</table>
+					</td>
+					<td style="vertical-align:middle;">
+						<a4j:mediaOutput id="preview" element="img" mimeType="image/jpeg"
+							createContent="#{previewWaterMarkBean.paint}" value="#{editImgBean.timeStamp}"
+							style="width:150px;height:150px;vertical-align:middle;" cacheable="false">
+						</a4j:mediaOutput>	
+					</td>
+				</tr>
+			</table>
+			
+			<table>
+				<tr>
+					<td style="vertical-align:top;">
+						<p:selectBooleanCheckbox id="textCheckBox" value="#{mainBean.userInfo.textWaterMarkCheckbox}">
+							<p:ajax update="picCheckBox" listener="#{mainBean.setWaterMarkTypeListener('textWaterMark')}"/>
+						</p:selectBooleanCheckbox>
+						<h:outputText value="文字水印" />
+						<!-- <h:outputText value="#{mainBean.userInfo.selectedWaterMarkImg}"/> -->
+						<p:graphicImage id="replaceWaterMark" value="../images/pen.png" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('waterMarkForm:replaceWaterMark');changeCursor('waterMarkForm:replaceWaterMark')" onclick="replaceWaterMarkImg()"/>
+							<!--
+							<p:graphicImage id="addWaterMark" value="../images/add.gif" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('');changeCursor('')"/>
+							<p:graphicImage id="deleteWaterMark" value="../images/delete.gif" style="display:none;position:absolute;width:30px;" onmouseover="showIcon('');showIcon('');changeCursor('')" />			
+							-->
+					</td>
+				</tr>
+			</table>
+
+			<table>
+				<tr>
+					<td>
+						<p:inputText id="textWaterMarkContent" value="#{mainBean.userInfo.textWaterMarkContent}">
+							<f:ajax event="change" listener="#{mainBean.textWaterMarkContentChangeListener}" />
+						</p:inputText>
+					</td>
+					<td>
+						<h:outputText value="文字颜色:"/>
+					</td>
+					<td>
+						<p:colorPicker value="#{mainBean.userInfo.textWaterMarkContentColor}" valueChangeListener="#{mainBean.textWaterMarkContentColorChangeListener}">
+						</p:colorPicker>
+						文字大小: <p:inputText value="#{mainBean.waterMarkFontSize}" style="width:20px;"/>
+					</td>
+				</tr>
+			</table>
+			<br/>
+			<div style="text-align:center;">
+			<p:commandLink value="预览" title="预览" styleClass="addnewbutton" action="#{mainBean.previewWaterMark}" update=":waterMarkForm:messages preview" onclick="showAjaxIndicatorEvent(event);" oncomplete="hideAjaxIndicator();"/>
+			<p:spacer width="20px;"/><p:commandLink value="保存" title="保存" styleClass="addnewbutton" action="#{mainBean.updateUserInfo}" update=":waterMarkForm:messages" />
+			<p:spacer width="20px;"/><p:commandLink value="关闭" title="关闭窗口" styleClass="addnewbutton" action="#{mainBean.doNothing}" onclick="PF('setWaterMark').hide();" />
+			</div>
+		</p:outputPanel>
+	</p:dialog>
+</h:form>
+
+<h:form id="editImgForm">
+	<p:dialog id="editImgDialog" header="编辑图片" widgetVar="editImg" modal="true" width="600px" height="400px">  
+		<p:outputPanel id="outputPanel" >
+			<!-- 
+			<h:outputText value="#{mainBean.currentItemImgId}"/><br/>
+			<h:outputText value="#{mainBean.currentItemImgPosition}"/><br/>
+			<h:outputText value="#{mainBean.itemData.itemImgs[mainBean.currentItemImgPosition]}"/><br/>
+			-->
+			<p:growl id="messages" showDetail="true" sticky="true" />
+			<p:panelGrid id="img">
+			<p:row>
+				<p:column id="imgelement" styleClass="dialogPoll" style="text-align:center;width:400px;height:380px;">
+					<a4j:mediaOutput element="img" mimeType="image/jpeg"
+						createContent="#{editImgBean.paint}" value="#{editImgBean.timeStamp}"
+						style="width:350px;" cacheable="false">
+					</a4j:mediaOutput>
+				</p:column>
+				<p:column style="width:150px;">
+				<!--  
+					亮度
+					<p:commandLink value="+" title="图片亮度" action="#{editImgBean.adjustBrightness('All','1.1')}" style="color:white;" styleClass="plus" update="img"/>
+					<p:commandLink value="-" title="图片亮度" action="#{editImgBean.adjustBrightness('All','0.9')}" style="color:white;" styleClass="minus" update="img"/>
+					<br/>
+					R
+					<p:commandLink value="+" title="图片亮度R" action="#{editImgBean.adjustBrightness('R','1.1')}" style="color:white;" styleClass="plus" update="img"/>
+					<p:commandLink value="-" title="图片亮度R" action="#{editImgBean.adjustBrightness('R','0.9')}" style="color:white;" styleClass="minus" update="img"/>
+					<br/>
+					G
+					<p:commandLink value="+" title="图片亮度G" action="#{editImgBean.adjustBrightness('G','1.1')}" style="color:white;" styleClass="plus" update="img"/>
+					<p:commandLink value="-" title="图片亮度G" action="#{editImgBean.adjustBrightness('G','0.9')}" style="color:white;" styleClass="minus" update="img"/>
+					<br/>
+					B
+					<p:commandLink value="+" title="图片亮度B" action="#{editImgBean.adjustBrightness('B','1.1')}" style="color:white;" styleClass="plus" update="img"/>
+					<p:commandLink value="-" title="图片亮度B" action="#{editImgBean.adjustBrightness('B','0.9')}" style="color:white;" styleClass="minus" update="img"/>
+					<br/>
+				-->
+					亮度/对比度
+			        <h:inputHidden id="valueAll" value="#{editImgBean.valueAll}" />  
+			        <p:slider for="valueAll" style="width:150px;height:15px;">
+			            <p:ajax event="slideEnd" listener="#{editImgBean.adjustBrightness}" update="img"/>
+			            <f:attribute name="which" value="All"/>
+			        </p:slider>  
+					红色
+			        <h:inputHidden id="valueR" value="#{editImgBean.valueR}" />  
+			        <p:slider for="valueR" style="width:150px">
+			            <p:ajax event="slideEnd" listener="#{editImgBean.adjustBrightness}" update="img"/>
+			            <f:attribute name="which" value="R"/>
+			        </p:slider>          
+			  		绿色
+			        <h:inputHidden id="valueG" value="#{editImgBean.valueG}" />  
+			        <p:slider for="valueG" style="width:150px">
+			            <p:ajax event="slideEnd" listener="#{editImgBean.adjustBrightness}" update="img"/>
+			            <f:attribute name="which" value="G"/>
+			        </p:slider>          
+			  		蓝色
+			        <h:inputHidden id="valueB" value="#{editImgBean.valueB}" />  
+			        <p:slider for="valueB" style="width:150px">
+			            <p:ajax event="slideEnd" listener="#{editImgBean.adjustBrightness}" update="img"/>
+			            <f:attribute name="which" value="B"/>
+			        </p:slider>         				
+					<br/>
+					<p:commandLink value="保存" title="保存图片" action="#{mainBean.saveEditedImg()}" styleClass="addnewbutton" update="messages :newItemImg:new_item_img" onstart="saveImgStart()" oncomplete="saveImgComplete();showNewItemImg();"/>
+					<p:spacer width="20px"/><p:commandLink value="刷新" title="重新设置" action="#{editImgBean.reset()}" styleClass="addnewbutton" update="img"/>
+					<br/><br/><p:commandLink value="关闭" title="关闭窗口" action="#{mainBean.doNothing()}" styleClass="addnewbutton" onclick="PF('editImg').hide()"/>
+				</p:column>		
+			</p:row>
+			</p:panelGrid>
+    			
+			<!--
+			<p:commandLink value="亮度" title="图片亮度" action="#{editImgBean.adjustBrightness('All','1.1')}" update="img"/>
+			<p:commandLink value="R" title="图片亮度R" action="#{editImgBean.adjustBrightness('R','1.1')}" update="img"/>
+			<p:commandLink value="G" title="图片亮度G" action="#{editImgBean.adjustBrightness('G','1.1')}" update="img"/>
+			<p:commandLink value="B" title="图片亮度B" action="#{editImgBean.adjustBrightness('B','1.1')}" update="img"/>
+			<p:commandLink value="保存" title="保存图片" action="#{mainBean.saveEditedImg()}" update="messages"/>
+			-->
+		</p:outputPanel>
+	</p:dialog>
+</h:form>
+
+<h:form>
+<p:growl id="messages" showDetail="true" sticky="true" />
+<p:idleMonitor timeout="5000000">
+    <p:ajax event="idle" listener="#{mainBean.idleListener}" update="messages" />
+    <p:ajax event="active" listener="#{mainBean.activeListener}" update="messages" />
+</p:idleMonitor>
+</h:form>
+	<!-- 
+	<h:form id="newItemImg">
+	<p:outputPanel id="new_item_img">
+		<p:graphicImage id="img" value="#{mainBean.newItemImgUrl}" style="display:none;position:absolute;"/>
+	</p:outputPanel>
+	</h:form>
+	-->
+	<h:form id="newItemImg">
+	<p:outputPanel id="new_item_img" style="display:none;position:absolute;">
+		<p:graphicImage id="img" value="#{mainBean.updateImg[0]}"/>
+		<h:outputText id="smallImgId" value="#{mainBean.updateImg[1]}"/>
+		<h:outputText id="status" value="#{mainBean.updateImg[2]}"/>
+	</p:outputPanel>
+	</h:form>
+	
+	<h:form id="updateItemForm">
+	<p:outputPanel id="update_item_result" style="display:none;position:absolute;">
+		<h:outputText id="updateItemResult" value="#{mainBean.updateItemResult}"/>
+	</p:outputPanel>
+	</h:form>
+<div id="indicator" style="position:absolute;display:none;">
+	<!-- <img src="../images/loader.gif" alt="loading......" /> -->
+	<!-- use css ajax indicator instead -->
+	<div id="floatingCirclesG">
+		<div class="f_circleG" id="frotateG_01"></div>
+		<div class="f_circleG" id="frotateG_02"></div>
+		<div class="f_circleG" id="frotateG_03"></div>
+		<div class="f_circleG" id="frotateG_04"></div>
+		<div class="f_circleG" id="frotateG_05"></div>
+		<div class="f_circleG" id="frotateG_06"></div>
+		<div class="f_circleG" id="frotateG_07"></div>
+		<div class="f_circleG" id="frotateG_08"></div>
+	</div>	
+</div>  
+
+
+</body>	
+
+</html>			

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html">
+<f:metadata>
+<f:event type="preRenderView" listener="#{userAuthorizationBean.init}" />
+</f:metadata>	
+<h:head>
+<title>淘图无忧</title>
+	<f:facet name="first">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="content-language" content="zh" />
+	</f:facet>
+</h:head>
+<body style="background:#f5f5f5;">
+<h:form>
+	<h:outputText value="#{userAuthorizationBean.initValue}" />
+
+</h:form>
+</body>
+</html>
